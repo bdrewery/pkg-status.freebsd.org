@@ -1,0 +1,77 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/fixes.html" as fixes %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='index.css')}}">
+{% endblock %}
+
+{% macro linkset(setname) -%}
+{% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
+{% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
+{% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
+{% set link="http://reviews.FreeBSD.org/" + setname %}
+{% endif %}
+{% if link %}
+<a href="{{ link }}">{{ setname }}</a>
+{% else %}
+{{ setname }}
+{% endif %}
+{%- endmacro %}
+
+{% block content %}
+{% for build_type in build_types %}
+<div class="container">
+  <h1>{{ build_type|capitalize }} Builds</h1>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Set</th>
+        <th>Port tree</th>
+        <th>Jail</th>
+        <th>Latest build</th>
+        <th class="queued">Queued</th>
+        <th class="built">Built</th>
+        <th class="failed">Failed</th>
+        <th class="skipped">Skipped</th>
+        <th class="ignored">Ignored</th>
+        <th class="remaining">Remaining</th>
+        <th>Status</th>
+        <th>Started (UTC)</th>
+        <th>Elapsed</th>
+        <th>Server</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for build in latest_builds[build_type] %}
+      <tr id="{{ build._id }}">
+        <td><a href="#{{ build._id }}">#</a></td>
+        <td>{{ linkset(build.setname) }}</td>
+        <td>{{ build.ptname }}</td>
+        <td>{{ build.jailname }}</td>
+        <td><a href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ build.buildname }}</a></td>
+        <td>{{ build.stats.queued }}</td>
+        <td>{{ build.stats.built }}</td>
+        <td>{{ build.stats.failed }}</td>
+        <td>{{ build.stats.skipped }}</td>
+        <td>{{ build.stats.ignored }}</td>
+        <td>{{ build.stats.remaining }}</td>
+        <td>{{ build.status }}</td>
+        <td>{{ (build.snap.now|int - build.snap.elapsed|int) | datetime }}</td>
+        <td>{{ build.snap.elapsed|duration }}</td>
+        <td><a href="http://{{ servers[build.server].host }}">{{ build.server }}</a></td>
+      </tr>
+    {%- endfor -%}
+    </tbody>
+  </table>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block head %}
+{{super()}}
+{{fixes.ie8()}}
+{% endblock %}

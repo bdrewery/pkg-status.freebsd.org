@@ -1,0 +1,11 @@
+.queued { background-color: #aaa !important; }
+.built { background-color: #00CC00 !important; }
+.built .row1 { background-color: #00FF00; }
+.failed { background-color: #E00000 !important; }
+.failed .row1 { background-color: #FF0000; }
+.skipped { background-color: #CC6633 !important; }
+.skipped .row1 { background-color: #AA6734; }
+.ignored { background-color: #FF9900 !important; }
+.ignored .row1 { background-color: #FF6F00; }
+.remaining { background-color: #E3E3E3 !important; }
+.latest { background-color: #f7Fe4a; }
