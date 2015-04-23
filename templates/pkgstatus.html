@@ -18,7 +18,6 @@
 {{ linkpoudrierebuild(build, servers) }}
 {%- endmacro %}
 
-
 {% macro linkpoudrierebuild(build, servers) -%}
 <a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}"><span class="glyphicon glyphicon-share-alt"></a>
 {%- endmacro %}
@@ -28,7 +27,8 @@
 {%- endmacro %}
 
 {% macro linkserver(build, servers) -%}
-<a title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ build.server }}</a>
+<a title="All builds matching servers {{ build.server }}" href="{{ url_for('servers', server=build.server) }}">{{ build.server }}</a>
+<a title="Poudriere Server" href="http://{{ servers[build.server].host }}/"><span class="glyphicon glyphicon-share-alt"></span></a>
 {%- endmacro %}
 
 {% macro linklog(build, servers, pkgname) -%}
