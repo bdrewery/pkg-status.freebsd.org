@@ -25,12 +25,12 @@ def create_app():
         return time.strftime(format, time.gmtime(int(timestamp)))
 
     def get_builds(selector):
-        return mongo.db.builds.find(selector).sort([
+        return list(mongo.db.builds.find(selector).sort([
             ('setname', pymongo.ASCENDING),
             ('ptname', pymongo.ASCENDING),
             ('jailname', pymongo.ASCENDING),
             ('buildname', pymongo.ASCENDING),
-            ])
+            ]))
 
     def get_server_map():
         return {x["_id"]:x for x in list(mongo.db.servers.find())}
@@ -62,6 +62,22 @@ def create_app():
                 build=build,
                 ports=ports,
                 servers=get_server_map())
+
+    @app.route('/sets/<setname>')
+    def sets(setname):
+        if setname == "default":
+            setname = ""
+        build_types = ["package", "qat", "exp"]
+        latest_builds = {}
+        for build_type in build_types:
+            latest_builds[build_type] = get_builds({
+                "latest": True,
+                'type': build_type,
+                "setname": setname})
+        return render_template('index.html',
+                servers=get_server_map(),
+                build_types=build_types,
+                latest_builds=latest_builds)
 
     return app
 

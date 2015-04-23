@@ -1,13 +1,15 @@
 {% macro linkset(setname) -%}
+{% if setname == "" -%}
+{% set setname="default" %}
+{%- endif %}
+<a title="All builds matching set {{ setname }}" href="{{ url_for('sets', setname=setname) }}">{{ setname }}</a>
 {% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
 {% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
 {% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
 {% set link="http://reviews.FreeBSD.org/" + setname %}
 {% endif %}
 {% if link %}
-<a href="{{ link }}">{{ setname }}</a>
-{% else %}
-{{ setname }}
+<a title="Related issue" href="{{ link }}"><span class="glyphicon glyphicon-share-alt"></span></a>
 {% endif %}
 {%- endmacro %}
 

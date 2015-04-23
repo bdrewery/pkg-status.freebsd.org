@@ -8,6 +8,7 @@
 
 {% block content %}
 {% for build_type in build_types %}
+{% if latest_builds[build_type] %}
 <div class="container">
   <h1>{{ build_type|capitalize }} Builds</h1>
 
@@ -59,5 +60,6 @@
     </tbody>
   </table>
 </div>
+{% endif %}
 {% endfor %}
 {% endblock %}
