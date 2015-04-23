@@ -13,9 +13,14 @@
 {% endif %}
 {%- endmacro %}
 
-
 {% macro linkbuild(build, servers) -%}
-<a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ build.buildname }}</a>
+<a title="All builds matching buildname {{ build.buildname }}" href="{{ url_for('builds', buildname=build.buildname) }}">{{ build.buildname }}</a>
+{{ linkpoudrierebuild(build, servers) }}
+{%- endmacro %}
+
+
+{% macro linkpoudrierebuild(build, servers) -%}
+<a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}"><span class="glyphicon glyphicon-share-alt"></a>
 {%- endmacro %}
 
 {% macro linkmaster(build, servers) -%}

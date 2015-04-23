@@ -79,6 +79,19 @@ def create_app():
                 build_types=build_types,
                 latest_builds=latest_builds)
 
+    @app.route('/builds/<buildname>')
+    def builds(buildname):
+        build_types = ["package", "qat", "exp"]
+        latest_builds = {}
+        for build_type in build_types:
+            latest_builds[build_type] = get_builds({
+                'type': build_type,
+                "buildname": buildname})
+        return render_template('index.html',
+                servers=get_server_map(),
+                build_types=build_types,
+                latest_builds=latest_builds)
+
     return app
 
 if __name__ == "__main__":
