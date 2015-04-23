@@ -174,7 +174,7 @@ with open("servers.txt", "r") as f:
                 if build is not None:
                     print("Updating %s / %s: %s" % (mastername, buildname,
                         buildid))
-                    db.builds.update({"_id": buildid}, build_info)
+                    db.builds.update({"_id": buildid}, {'$set': build_info})
                 else:
                     print("Insert %s / %s: %s" % (mastername, buildname,
                         buildid))
