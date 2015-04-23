@@ -3,6 +3,7 @@
 import requests
 import sys
 import pymongo
+import re
 
 def fetch_data(server, path):
     url = "http://%s%s" % (server, path)
@@ -85,8 +86,17 @@ with open("servers.txt", "r") as f:
                     }
             db.servers.insert(server_info)
         for mastername, latest_build, setname, ptname, jailname in masternames:
+            running_builds = True
+            if mastername in server_info["masternames"]:
+                if db.builds.find_one({'status': {
+                    '$not': re.compile("^stopped:")},
+                    'mastername': mastername, 'server': server_short},
+                    {'_id': ''}) is None:
+                    running_builds = False
             # If the latest build has not changed then skip fetching more.
-            if mastername in server_info["masternames"] and latest_build == \
+            if running_builds and \
+                    mastername in server_info["masternames"] and \
+                    latest_build == \
                     server_info["masternames"][mastername]["latest"]:
                 continue
             elif mastername not in server_info["masternames"]:
@@ -95,7 +105,6 @@ with open("servers.txt", "r") as f:
             builds = gather_builds(server, mastername)
             if builds is None:
                 continue
-            print("Importing mastername %s/%s" % (server, mastername))
 
             # Prepare the dst dict.
             if len(setname) == 0:
