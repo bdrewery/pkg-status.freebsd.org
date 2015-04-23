@@ -25,13 +25,14 @@ def create_app():
         return time.strftime(format, time.gmtime(int(timestamp)))
 
     def get_builds(selector):
-        return list(mongo.db.builds.find(selector).sort([
-            ('snap.now - snap.elapsed', pymongo.DESCENDING),
-            ('setname', pymongo.ASCENDING),
-            ('ptname', pymongo.ASCENDING),
-            ('jailname', pymongo.ASCENDING),
-            ('buildname', pymongo.ASCENDING),
-            ]))
+        return {'filter': selector,
+                'results': list(mongo.db.builds.find(selector).sort([
+                    ('snap.now - snap.elapsed', pymongo.DESCENDING),
+                    ('setname', pymongo.ASCENDING),
+                    ('ptname', pymongo.ASCENDING),
+                    ('jailname', pymongo.ASCENDING),
+                    ('buildname', pymongo.ASCENDING),
+                    ]))}
 
     def get_server_map():
         return {x["_id"]:x for x in list(mongo.db.servers.find())}

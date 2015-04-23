@@ -13,9 +13,11 @@
 Only displaying latest matching builds.
 {% endif %}
 {% for build_type in build_types %}
-{% if latest_builds[build_type] %}
+{% if latest_builds[build_type]['results'] %}
 <div class="container">
   <h1>{{ pkgstatus.linktype(build_type) }} Builds</h1>
+
+  {{ pkgstatus.print_filter(latest_builds[build_type].filter) }}
 
   <table class="table">
     <thead>
@@ -39,7 +41,7 @@ Only displaying latest matching builds.
       </tr>
     </thead>
     <tbody>
-    {% for build in latest_builds[build_type] %}
+    {% for build in latest_builds[build_type]['results'] %}
       <tr id="{{ build._id }}">
         <td><a href="#{{ build._id }}">#</a></td>
         <td>{{ pkgstatus.linkset(build.setname) }}</td>
