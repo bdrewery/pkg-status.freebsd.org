@@ -43,6 +43,7 @@ def create_app():
             latest_builds[build_type] = get_builds({"latest": True,
                 "type": build_type})
         return render_template('index.html',
+                latest=True,
                 build_types=build_types,
                 latest_builds=latest_builds,
                 servers=get_server_map())
@@ -75,6 +76,7 @@ def create_app():
                 'type': build_type,
                 "setname": setname})
         return render_template('index.html',
+                latest=True,
                 servers=get_server_map(),
                 build_types=build_types,
                 latest_builds=latest_builds)

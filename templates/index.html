@@ -7,6 +7,10 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
+{% if latest %}
+Only displaying latest matching builds.
+{% endif %}
 {% for build_type in build_types %}
 {% if latest_builds[build_type] %}
 <div class="container">
@@ -62,4 +66,5 @@
 </div>
 {% endif %}
 {% endfor %}
+</div>
 {% endblock %}
