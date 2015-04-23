@@ -1,0 +1,25 @@
+{% macro linkset(setname) -%}
+{% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
+{% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
+{% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
+{% set link="http://reviews.FreeBSD.org/" + setname %}
+{% endif %}
+{% if link %}
+<a href="{{ link }}">{{ setname }}</a>
+{% else %}
+{{ setname }}
+{% endif %}
+{%- endmacro %}
+
+
+{% macro linkbuild(build, servers) -%}
+<a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ build.buildname }}</a>
+{%- endmacro %}
+
+{% macro linkmaster(build, servers) -%}
+<a title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ build.mastername }}</a>
+{%- endmacro %}
+
+{% macro linkserver(build, servers) -%}
+<a title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ build.server }}</a>
+{%- endmacro %}

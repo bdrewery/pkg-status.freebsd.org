@@ -1,24 +1,10 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/fixes.html" as fixes %}
+{% extends "base.html" %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet"
       href="{{url_for('.static', filename='index.css')}}">
 {% endblock %}
-
-{% macro linkset(setname) -%}
-{% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
-{% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
-{% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
-{% set link="http://reviews.FreeBSD.org/" + setname %}
-{% endif %}
-{% if link %}
-<a href="{{ link }}">{{ setname }}</a>
-{% else %}
-{{ setname }}
-{% endif %}
-{%- endmacro %}
 
 {% block content %}
 {% for build_type in build_types %}
@@ -50,10 +36,10 @@
     {% for build in latest_builds[build_type] %}
       <tr id="{{ build._id }}">
         <td><a href="#{{ build._id }}">#</a></td>
-        <td>{{ linkset(build.setname) }}</td>
+        <td>{{ pkgstatus.linkset(build.setname) }}</td>
         <td>{{ build.ptname }}</td>
         <td>{{ build.jailname }}</td>
-        <td><a href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ build.buildname }}</a></td>
+        <td>{{ pkgstatus.linkbuild(build, servers) }}</td>
         <td>{{ build.stats.queued }}</td>
         <td>{{ build.stats.built }}</td>
         <td>{{ build.stats.failed }}</td>
@@ -63,17 +49,12 @@
         <td>{{ build.status }}</td>
         <td>{{ (build.snap.now - build.snap.elapsed) | datetime }}</td>
         <td>{{ build.snap.elapsed|duration }}</td>
-        <td><a href="http://{{ servers[build.server].host }}">{{ build.server }}</a></td>
-        <td><a href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}"><span class="glyphicon glyphicon-tower"></span></a></td>
+        <td>{{ pkgstatus.linkserver(build, servers) }}</td>
+        <td>{{ pkgstatus.linkmaster(build, servers) }}</td>
       </tr>
     {%- endfor -%}
     </tbody>
   </table>
 </div>
 {% endfor %}
-{% endblock %}
-
-{% block head %}
-{{super()}}
-{{fixes.ie8()}}
 {% endblock %}
