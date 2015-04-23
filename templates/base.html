@@ -8,6 +8,13 @@
       href="{{url_for('.static', filename='pkgstatus.css')}}">
 {% endblock %}
 
+{% block content %}
+{{super()}}
+{% if request.path != "/" -%}
+<a href="{{ url_for('index') }}" title="Main Index"><span class="glyphicon glyphicon-home"></span></a>
+{%- endif %}
+{% endblock %}
+
 {% block head %}
 {{super()}}
 {{fixes.ie8()}}
