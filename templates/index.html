@@ -43,6 +43,7 @@
         <th>Started (UTC)</th>
         <th>Elapsed</th>
         <th>Server</th>
+        <th>Jail builds</th>
       </tr>
     </thead>
     <tbody>
@@ -63,6 +64,7 @@
         <td>{{ (build.snap.now - build.snap.elapsed) | datetime }}</td>
         <td>{{ build.snap.elapsed|duration }}</td>
         <td><a href="http://{{ servers[build.server].host }}">{{ build.server }}</a></td>
+        <td><a href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}"><span class="glyphicon glyphicon-tower"></span></a></td>
       </tr>
     {%- endfor -%}
     </tbody>
