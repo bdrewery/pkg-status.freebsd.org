@@ -41,10 +41,13 @@
         <td>{{ build.jailname }}</td>
         <td>{{ pkgstatus.linkbuild(build, servers) }}</td>
         <td>{{ build.stats.queued }}</td>
-        <td>{{ build.stats.built }}</td>
-        <td>{{ build.stats.failed }}</td>
-        <td>{{ build.stats.skipped }}</td>
-        <td>{{ build.stats.ignored }}</td>
+        {% for stat in ["built", "failed", "skipped", "ignored"] %}
+        <td>{{ build.stats[stat] }}
+          {%- if build.new_stats and build.new_stats[stat] -%}
+          &nbsp;<a href="{{ url_for('build', buildid=build._id) }}">(+{{ build.new_stats[stat] }})</a>
+          {%- endif -%}
+        </td>
+        {% endfor %}
         <td>{{ build.stats.remaining }}</td>
         <td>{{ build.status }}</td>
         <td>{{ (build.snap.now - build.snap.elapsed) | datetime }}</td>

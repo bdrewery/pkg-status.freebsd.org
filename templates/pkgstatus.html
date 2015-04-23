@@ -23,3 +23,7 @@
 {% macro linkserver(build, servers) -%}
 <a title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ build.server }}</a>
 {%- endmacro %}
+
+{% macro linklog(build, servers, pkgname) -%}
+<a title="{{ pkgname }} Build Log" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log">{{ pkgname }}</a>
+{%- endmacro %}

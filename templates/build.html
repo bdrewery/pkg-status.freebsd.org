@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <a href="{{ url_for('index') }}" title="Main Index"><span class="glyphicon glyphicon-home"></span></a>
+
+  <dl class="dl-horizontal">
+    <dt>Build</dt>
+    <dd id="buildname">{{ pkgstatus.linkbuild(build, servers) }}</dd>
+    <dt>Master</dt>
+    <dd id="mastername">{{ pkgstatus.linkmaster(build, servers) }}</dd>
+    <dt>Server</dt>
+    <dd id="server">{{ pkgstatus.linkserver(build, servers) }}</dd>
+    <dt>Status</dt>
+    <dd id="status">{{ build.status }}</dd>
+    <dt>Jail</dt>
+    <dd id="jail">{{ build.jailname }}</dd>
+    <dt>Set</dt>
+    <dd id="setname">{{ build.setname }}</dd>
+    <dt>Ports Tree</dt>
+    <dd id="ptname">{{ build.ptname }}</dd>
+    <dt>SVN</dt>
+    <dd id="svn_url">{{ build.svn_url }}</dd>
+  </dl>
+</div>
+
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Stat</th>
+        <th>Current</th>
+        <th>New</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stat in ["built", "failed", "skipped", "ignored"] -%}
+      <tr>
+        <th class="{{ stat }}">{{ stat|capitalize }}</th>
+        <td id="stat_{{ stat }}">{{ build.stats[stat] }}</td>
+        <td id="stat_new_{{ stat }}">
+          {% if build.new_stats and build.new_stats[stat] -%}
+          {{ build.new_stats[stat] }}
+          {%- endif %}
+        </td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+
+  {% if build.new_stats -%}
+  {% for stat in ["failed", "skipped", "ignored"] -%}
+  {% if build.new_stats[stat] -%}
+  <h2>New {{ stat|capitalize }}</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Package</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for origin in ports.new[stat] -%}
+        <tr>
+          <td>{{ pkgstatus.linklog(build, servers, ports.pkgnames[origin]) }}</td>
+        </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+  {%- endif %}
+  {%- endfor %}
+  {%- endif %}
+</div>
+{% endblock %}

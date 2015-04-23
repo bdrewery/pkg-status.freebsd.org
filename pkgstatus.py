@@ -32,6 +32,9 @@ def create_app():
             ('buildname', pymongo.ASCENDING),
             ])
 
+    def get_server_map():
+        return {x["_id"]:x for x in list(mongo.db.servers.find())}
+
     @app.route('/')
     def index():
         build_types = ["package", "qat", "exp"]
@@ -39,12 +42,26 @@ def create_app():
         for build_type in build_types:
             latest_builds[build_type] = get_builds({"latest": True,
                 "type": build_type})
-        server_map = {x["_id"]:x for x in
-                list(mongo.db.servers.find())}
         return render_template('index.html',
                 build_types=build_types,
                 latest_builds=latest_builds,
-                servers=server_map)
+                servers=get_server_map())
+
+    @app.route('/build/<buildid>')
+    def build(buildid):
+        build = mongo.db.builds.find_one_or_404({'_id': buildid})
+        ports = mongo.db.ports.find_one({'_id': buildid})
+        # XXX: This should all be structured in the db
+        pkgnames = {}
+        ports['pkgnames'] = pkgnames
+        for key in ['built', 'failed', 'skipped', 'ignored']:
+            if key in ports:
+                for obj in ports[key]:
+                    pkgnames[obj['origin']] = obj['pkgname']
+        return render_template('build.html',
+                build=build,
+                ports=ports,
+                servers=get_server_map())
 
     return app
 
