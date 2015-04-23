@@ -31,6 +31,10 @@
 <a title="Poudriere Server" href="http://{{ servers[build.server].host }}/"><span class="glyphicon glyphicon-share-alt"></span></a>
 {%- endmacro %}
 
+{% macro linktype(build_type) -%}
+<a title="All builds matching type {{ build_type }}" href="{{ url_for('types', build_type=build_type) }}">{{ build_type|capitalize }}</a>
+{%- endmacro %}
+
 {% macro linklog(build, servers, pkgname) -%}
 <a title="{{ pkgname }} Build Log" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log">{{ pkgname }}</a>
 {%- endmacro %}

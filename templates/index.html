@@ -15,7 +15,7 @@ Only displaying latest matching builds.
 {% for build_type in build_types %}
 {% if latest_builds[build_type] %}
 <div class="container">
-  <h1>{{ build_type|capitalize }} Builds</h1>
+  <h1>{{ pkgstatus.linktype(build_type) }} Builds</h1>
 
   <table class="table">
     <thead>

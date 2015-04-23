@@ -96,6 +96,19 @@ def create_app():
                 build_types=build_types,
                 latest_builds=latest_builds)
 
+    @app.route('/types/<build_type>')
+    def types(build_type):
+        latest_builds = {}
+        latest_builds[build_type] = get_builds({
+            "latest": True,
+            'type': build_type})
+
+        return render_template('index.html',
+                latest=True,
+                servers=get_server_map(),
+                build_types=[build_type],
+                latest_builds=latest_builds)
+
     @app.route('/builds/<buildname>')
     def builds(buildname):
         build_types = ["package", "qat", "exp"]
