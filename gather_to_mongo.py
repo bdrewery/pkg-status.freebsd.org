@@ -63,6 +63,7 @@ db = conn.pkgstatus
 
 qat_sets = ["qat", "baseline", "build-as-user"]
 
+# Import new data
 with open("servers.txt", "r") as f:
     for line in f:
         if line[0] == "#":
@@ -165,3 +166,65 @@ with open("servers.txt", "r") as f:
                         buildid))
                     db.builds.insert(build_info)
         db.servers.update({"_id": server_short}, server_info)
+
+# Process new failures
+for portids in db.ports.find({'new': {'$exists': False}},
+        {"_id": ""}):
+    # This is not done above as it would load several GB of data.
+    # Need to fetch current and previous build's data.
+
+    # Get current build info
+    build = db.builds.find_one({'_id': portids['_id'],
+        'status': 'stopped:done:', 'snap.now': {'$exists': True}},
+        {'mastername': '', 'type': '', 'snap.now': ''})
+    # Ignore legacy data (no snap.now) and crashed builds.
+    if build is None:
+        db.ports.update({'_id': portids['_id']}, {'$set': {'new': []}})
+        continue
+    # Find the previous matching build or skip if there is none. Only consider
+    # passing builds.
+    if build['type'] in ["package", "qat"]:
+        # Just compare package/qat runs to themselves.
+        previous_build = list(db.builds.find({
+            'mastername': build['mastername'], 'type': build['type'],
+            'status': 'stopped:done:',
+            'snap.now': {'$lt': build['snap']['now']}}).sort(
+                    [('snap.now', pymongo.DESCENDING)]).limit(1))
+    else:
+        # Compare exp runs to a previous baseline
+        # XXX
+        continue
+
+    if len(previous_build) == 0:
+        continue
+    previous_build = previous_build[0]
+    print("Build %s has previous build %s" % (build['_id'],
+        previous_build['_id']))
+
+    # Fetch the full port list for both builds to determine changes
+    result_keys = ['built', 'failed', 'skipped', 'ignored']
+    ports_list = db.ports.find({
+        '_id': { '$in': [build['_id'], previous_build['_id']] } },
+        {x: '' for x in result_keys})
+    if ports_list[0]['_id'] == build['_id']:
+        current_ports = ports_list[0]
+        previous_ports = ports_list[1]
+    else:
+        previous_ports = ports_list[0]
+        current_ports = ports_list[1]
+    # Determine differences and store back
+    new_list = {}
+    new_stats = {}
+    for result_key in result_keys:
+        if result_key not in current_ports:
+            current_ports[result_key] = []
+        if result_key not in previous_ports:
+            previous_ports[result_key] = []
+        new_list[result_key] = list(
+                set([x['origin'] for x in current_ports[result_key]]) -
+                set([x['origin'] for x in previous_ports[result_key]]))
+        new_stats[result_key] = len(new_list[result_key])
+    db.ports.update({'_id': build['_id']}, {'$set': {'new': new_list}})
+    db.builds.update({'_id': build['_id']},
+            {'$set': {'new_stats': new_stats,
+                'previous_id': previous_build['_id']}})
