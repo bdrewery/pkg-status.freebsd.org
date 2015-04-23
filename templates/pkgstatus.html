@@ -22,7 +22,7 @@
 {% set setname="default" %}
 {%- endif %}
 {{ setname }}&nbsp;
-<a title="All builds matching set {{ setname }}" href="{{ url_for('sets', setname=setname) }}"><span class="glyphicon glyphicon-filter"></span></a>
+<a title="All builds matching set {{ setname }}" href="{{ url_for('builds', setname=setname) }}"><span class="glyphicon glyphicon-filter"></span></a>
 {% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
 {% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
 {% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
@@ -50,13 +50,13 @@
 
 {% macro linkserver(build, servers) -%}
 {{ build.server }}&nbsp;
-<a title="All builds matching servers {{ build.server }}" href="{{ url_for('servers', server=build.server) }}">{{ filter_icon() }}</a>
+<a title="All builds matching servers {{ build.server }}" href="{{ url_for('builds', server=build.server) }}">{{ filter_icon() }}</a>
 <a title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linktype(build_type) -%}
 {{ build_type|capitalize }}&nbsp;
-<a title="All builds matching type {{ build_type }}" href="{{ url_for('types', build_type=build_type) }}">{{ filter_icon() }}</a>
+<a title="All builds matching type {{ build_type }}" href="{{ url_for('builds', build_type=build_type) }}">{{ filter_icon() }}</a>
 {%- endmacro %}
 
 {% macro linklog(build, servers, pkgname) -%}
