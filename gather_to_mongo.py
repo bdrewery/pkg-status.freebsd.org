@@ -96,10 +96,6 @@ with open("servers.txt", "r") as f:
                 continue
             print("Importing mastername %s/%s" % (server, mastername))
 
-            # Prepare the dst dict.
-            if len(setname) == 0:
-                setname = "default" # Don't do this
-
             # XXX: Archive deleted builds
             for buildname, build_info_sparse in builds.iteritems():
                 if buildname == "latest":
