@@ -61,6 +61,8 @@ def build_id_to_buildname(buildid):
 conn = pymongo.Connection()
 db = conn.pkgstatus
 
+qat_sets = ["qat", "baseline", "build-as-user"]
+
 with open("servers.txt", "r") as f:
     for line in f:
         if line[0] == "#":
@@ -151,6 +153,8 @@ with open("servers.txt", "r") as f:
                 build_info["_id"] = buildid
                 build_info["server"] = server_short
                 build_info["type"] = server_type
+                if build_info["type"] in qat_sets:
+                    build_info["type"] = "qat"
                 if build is not None:
                     print("Updating %s / %s: %s" % (mastername, buildname,
                         buildid))
@@ -160,6 +164,3 @@ with open("servers.txt", "r") as f:
                         buildid))
                     db.builds.insert(build_info)
         db.servers.update({"_id": server_short}, server_info)
-    qat_sets = ["qat", "baseline", "build-as-user"]
-    db.builds.update({"type": "exp", "setname": qat_sets},
-            {"$set": {"type": "qat"}}, multi=True)
