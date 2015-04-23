@@ -1,8 +1,17 @@
+{% macro poudriere_icon() -%}
+<img src="{{ url_for('static', filename='poudriere.png') }}">
+{%- endmacro %}
+
+{% macro filter_icon() -%}
+<span class="glyphicon glyphicon-filter"></span>
+{%- endmacro %}
+
 {% macro linkset(setname) -%}
 {% if setname == "" -%}
 {% set setname="default" %}
 {%- endif %}
-<a title="All builds matching set {{ setname }}" href="{{ url_for('sets', setname=setname) }}">{{ setname }}</a>
+{{ setname }}&nbsp;
+<a title="All builds matching set {{ setname }}" href="{{ url_for('sets', setname=setname) }}"><span class="glyphicon glyphicon-filter"></span></a>
 {% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
 {% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
 {% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
@@ -14,25 +23,29 @@
 {%- endmacro %}
 
 {% macro linkbuild(build, servers) -%}
-<a title="All builds matching buildname {{ build.buildname }}" href="{{ url_for('builds', buildname=build.buildname) }}">{{ build.buildname }}</a>
+<a title"Build {{ build._id }}" href="{{ url_for('build', buildid=build._id)}}">{{ build.buildname }}</a>
+<a title="All builds matching buildname {{ build.buildname }}" href="{{ url_for('builds', buildname=build.buildname) }}">{{ filter_icon() }}</a>&nbsp;
 {{ linkpoudrierebuild(build, servers) }}
 {%- endmacro %}
 
 {% macro linkpoudrierebuild(build, servers) -%}
-<a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}"><span class="glyphicon glyphicon-share-alt"></a>
+<a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkmaster(build, servers) -%}
-<a title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ build.mastername }}</a>
+{{ build.mastername }}&nbsp;
+<a title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkserver(build, servers) -%}
-<a title="All builds matching servers {{ build.server }}" href="{{ url_for('servers', server=build.server) }}">{{ build.server }}</a>
-<a title="Poudriere Server" href="http://{{ servers[build.server].host }}/"><span class="glyphicon glyphicon-share-alt"></span></a>
+{{ build.server }}&nbsp;
+<a title="All builds matching servers {{ build.server }}" href="{{ url_for('servers', server=build.server) }}">{{ filter_icon() }}</a>
+<a title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linktype(build_type) -%}
-<a title="All builds matching type {{ build_type }}" href="{{ url_for('types', build_type=build_type) }}">{{ build_type|capitalize }}</a>
+{{ build_type|capitalize }}&nbsp;
+<a title="All builds matching type {{ build_type }}" href="{{ url_for('types', build_type=build_type) }}">{{ filter_icon() }}</a>
 {%- endmacro %}
 
 {% macro linklog(build, servers, pkgname) -%}
