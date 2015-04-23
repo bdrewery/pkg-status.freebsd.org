@@ -139,7 +139,8 @@ with open("servers.txt", "r") as f:
                 if "snap" in build_info:
                     for snapkey in ["now", "elapsed"]:
                         if snapkey in build_info["snap"]:
-                            build_info[snapkey] = int(build_info[snapkey])
+                            build_info["snap"][snapkey] = \
+                                    int(build_info["snap"][snapkey])
 
                 # Trim idle jobs to save db space
                 if "jobs" in build_info:
