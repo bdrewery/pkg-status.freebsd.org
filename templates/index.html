@@ -60,7 +60,7 @@
         <td>{{ build.stats.ignored }}</td>
         <td>{{ build.stats.remaining }}</td>
         <td>{{ build.status }}</td>
-        <td>{{ (build.snap.now|int - build.snap.elapsed|int) | datetime }}</td>
+        <td>{{ (build.snap.now - build.snap.elapsed) | datetime }}</td>
         <td>{{ build.snap.elapsed|duration }}</td>
         <td><a href="http://{{ servers[build.server].host }}">{{ build.server }}</a></td>
       </tr>

@@ -135,6 +135,11 @@ with open("servers.txt", "r") as f:
                     # Probably a crashed build.
                     build_info["stats"]["remaining"] = 0
 
+                if "snap" in build_info:
+                    for snapkey in ["now", "elapsed"]:
+                        if snapkey in build_info["snap"]:
+                            build_info[snapkey] = int(build_info[snapkey])
+
                 # Trim idle jobs to save db space
                 if "jobs" in build_info:
                     build_info["jobs"] = [job for job in
