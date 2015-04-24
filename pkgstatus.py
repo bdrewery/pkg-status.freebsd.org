@@ -76,8 +76,8 @@ def create_app():
         else:
             query['latest'] = True
             latest = True
-        if "build_types" in query:
-            build_types = query['build_types']
+        if "type" in query:
+            build_types = [query['type']]
         else:
             build_types = ["package", "qat", "exp"]
         latest_builds = {}
