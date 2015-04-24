@@ -50,6 +50,7 @@
   </table>
 
   {% if build.new_stats -%}
+  Compared to the <a href="{{ url_for('build', buildid=build.previous_id) }}">previous build</a>
   {% for stat in ["failed", "skipped", "ignored"] -%}
   {% if build.new_stats[stat] -%}
   <h2>New {{ stat|capitalize }}</h2>
