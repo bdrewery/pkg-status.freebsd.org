@@ -40,18 +40,18 @@
 {%- endmacro %}
 
 {% macro linkpoudrierebuild(build, servers) -%}
-<a title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
+<a target="_new" title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkmaster(build, servers) -%}
 {{ build.mastername }}&nbsp;
-<a title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ poudriere_icon() }}</a>
+<a target="_new" title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkserver(build, servers) -%}
 {{ build.server }}&nbsp;
 <a title="All builds matching servers {{ build.server }}" href="{{ url_for('builds', server=build.server) }}">{{ filter_icon() }}</a>
-<a title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
+<a target="_new" title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linktype(build_type) -%}
@@ -59,6 +59,10 @@
 <a title="All builds matching type {{ build_type }}" href="{{ url_for('builds', build_type=build_type) }}">{{ filter_icon() }}</a>
 {%- endmacro %}
 
-{% macro linklog(build, servers, pkgname) -%}
-<a title="{{ pkgname }} Build Log" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log">{{ pkgname }}</a>
+{% macro linklog(build, servers, text, pkgname) -%}
+<a target="_new" title="Build Log for {{ pkgname }}" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log"><span class="glyphicon glyphicon-file"></span>{{ text }}</a>
+{%- endmacro %}
+
+{% macro linkorigin(origin) -%}
+<a target="_new" title="Portsmon for {{ origin }}" href="http://portsmon.freebsd.org/portoverview.py?category={{ origin.split('/')[0] }}&amp;portname={{ origin.split('/')[1] }}"><span class="glyphicon glyphicon-tasks"></span>{{ origin }}</a>
 {%- endmacro %}

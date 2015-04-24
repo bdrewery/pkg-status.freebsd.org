@@ -57,12 +57,39 @@
     <thead>
       <tr>
         <th>Package</th>
+        <th>Origin</th>
+        {% if stat == "failed" -%}
+        <th>Phase</th>
+        <th>Skipped</th>
+        {%- endif %}
+        {% if stat == "skipped" or stat == "ignored" -%}
+        <th>Reason</th>
+        {%- else %}
+        <th>Log</th>
+        {%- endif %}
       </tr>
     </thead>
     <tbody>
       {% for origin in ports.new[stat] -%}
         <tr>
-          <td>{{ pkgstatus.linklog(build, servers, ports.pkgnames[origin]) }}</td>
+          <td>{{ ports.pkgnames[origin] }}</td>
+          <td>{{ pkgstatus.linkorigin(origin) }}</td>
+          {% if stat == "failed" -%}
+          <td>{{ ports[stat][origin].phase }}</td>
+          <td></td>
+          {%- endif %}
+          {% if stat == "skipped" -%}
+          <td>{{ ports[stat][origin].depends }}</td>
+          {%- else -%}
+            {% if stat == "built" -%}
+            {% set reason="success" %}
+            {% elif stat == "ignored" -%}
+            {% set reason=ports[stat][origin].reason %}
+            {% elif stat == "failed" %}
+            {% set reason=ports[stat][origin].errortype %}
+            {%- endif %}
+            <td>{{ pkgstatus.linklog(build, servers, reason, ports.pkgnames[origin]) }}</td>
+          {%- endif %}
         </tr>
       {%- endfor %}
     </tbody>
