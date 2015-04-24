@@ -25,7 +25,7 @@ def gather_masternames(server):
     json = fetch_data(server, "/data/.data.json")
     if not json or "masternames" not in json:
         return None
-    return [(mastername, build["latest"]["buildname"],
+    return [(mastername, build["latest"],
         build["setname"], build["ptname"], build["jailname"])
             for mastername, build in json["masternames"].iteritems()]
 
@@ -103,23 +103,16 @@ with open("servers.txt", "r") as f:
                     "masternames": {}
                     }
             db.servers.insert(server_info)
-        for mastername, latest_build, setname, ptname, jailname in masternames:
+        for mastername, latest, setname, ptname, jailname in masternames:
             running_builds = True
-            if mastername in server_info["masternames"]:
-                if db.builds.find_one({'status': {
-                    '$not': re.compile("^stopped:")},
-                    'mastername': mastername, 'server': server_short},
-                    {'_id': ''}) is None:
-                    running_builds = False
-            # If the latest build has not changed then skip fetching more.
-            if running_builds and \
+            if latest['status'][0:7] == 'stopped' and \
                     mastername in server_info["masternames"] and \
-                    latest_build == \
+                    latest['buildname'] == \
                     server_info["masternames"][mastername]["latest"]:
                 continue
             elif mastername not in server_info["masternames"]:
                 server_info["masternames"][mastername] = {}
-            server_info["masternames"][mastername]["latest"] = latest_build
+            server_info["masternames"][mastername]["latest"] = latest['buildname']
             builds = gather_builds(server, mastername)
             if builds is None:
                 continue
