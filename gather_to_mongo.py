@@ -105,14 +105,21 @@ with open("servers.txt", "r") as f:
             db.servers.insert(server_info)
         for mastername, latest, setname, ptname, jailname in masternames:
             running_builds = True
+            if 'latest_status' not in server_info["masternames"][mastername]:
+                server_info["masternames"][mastername]['latest_status'] = \
+                        'unknown'
             if latest['status'][0:7] == 'stopped' and \
                     mastername in server_info["masternames"] and \
                     latest['buildname'] == \
-                    server_info["masternames"][mastername]["latest"]:
+                    server_info["masternames"][mastername]["latest"] and \
+                    latest['status'] == \
+                    server_info["masternames"][mastername]["latest_status"]:
                 continue
             elif mastername not in server_info["masternames"]:
                 server_info["masternames"][mastername] = {}
             server_info["masternames"][mastername]["latest"] = latest['buildname']
+            server_info["masternames"][mastername]["latest_status"] = \
+                    latest['status']
             builds = gather_builds(server, mastername)
             if builds is None:
                 continue
