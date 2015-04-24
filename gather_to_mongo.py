@@ -200,6 +200,15 @@ with open("servers.txt", "r") as f:
                     db.builds.insert(build_info)
         db.servers.update({"_id": server_short}, server_info)
 
+# Repair pkgnames
+for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
+    # Fetch here rather than in the loop due to memory explosion
+    ports = db.ports.find_one({'_id': portids['_id']},
+        {x: '' for x in ['built', 'failed', 'skipped', 'ignored']})
+    print("Fixing pkgnames for %s" % portids['_id'])
+    fix_ports(ports)
+    db.ports.update({'_id': portids['_id']}, {'$set': ports})
+
 # Process new failures
 for portids in db.ports.find({'new': {'$exists': False}},
         {"_id": ""}):
@@ -262,11 +271,3 @@ for portids in db.ports.find({'new': {'$exists': False}},
             {'$set': {'new_stats': new_stats,
                 'previous_id': previous_build['_id']}})
 
-# Repair pkgnames
-for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
-    # Fetch here rather than in the loop due to memory explosion
-    ports = db.ports.find_one({'_id': portids['_id']},
-        {x: '' for x in ['built', 'failed', 'skipped', 'ignored']})
-    print("Fixing pkgnames for %s" % portids['_id'])
-    fix_ports(ports)
-    db.ports.update({'_id': portids['_id']}, {'$set': ports})
