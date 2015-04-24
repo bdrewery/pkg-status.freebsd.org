@@ -6,14 +6,23 @@
 <span class="glyphicon glyphicon-filter"></span>
 {%- endmacro %}
 
-{% macro print_filter(filter) -%}
+{% macro print_filter(filter, type=None) -%}
 <dl class="dl-horizontal">
   <dt>Query Filter</dt>
   <dd></dd>
   {% for item in filter -%}
+  {% if item != 'type' -%}
   <dt>{{ item|capitalize }}</dt>
   <dd>{{ filter[item] }}</dd>
+  {%- endif %}
   {%- endfor %}
+  {% if type -%}
+  <dt>Type</dt>
+  <dd>{{ type }}</dd>
+  {%- elif filter['type'] -%}
+  <dt>Type</dt>
+  <dd>{{ filter['type'] }}</dd>
+  {%- endif %}
 </dl>
 {%- endmacro %}
 

@@ -1,6 +1,6 @@
 import datetime
 import json
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from flask_bootstrap import Bootstrap
 from flask.ext.pymongo import PyMongo
 import flask.ext.pymongo as pymongo
@@ -24,9 +24,9 @@ def create_app():
         date = datetime.datetime.fromtimestamp(int(timestamp))
         return time.strftime(format, time.gmtime(int(timestamp)))
 
-    def get_builds(selector):
+    def _get_builds(selector):
         return {'filter': selector,
-                'results': list(mongo.db.builds.find(selector).sort([
+                'builds': list(mongo.db.builds.find(selector).sort([
                     ('snap.now - snap.elapsed', pymongo.DESCENDING),
                     ('setname', pymongo.ASCENDING),
                     ('ptname', pymongo.ASCENDING),
@@ -51,19 +51,9 @@ def create_app():
 
     @app.route('/')
     def index():
-        build_types = ["package", "qat", "exp"]
-        latest_builds = {}
-        for build_type in build_types:
-            latest_builds[build_type] = get_builds({"latest": True,
-                "type": build_type})
-        return render_template('index.html',
-                latest=True,
-                build_types=build_types,
-                latest_builds=latest_builds,
-                servers=get_server_map())
+        return builds()
 
-    @app.route('/builds')
-    def builds():
+    def _builds():
         query = {}
         for key, value in request.args.iteritems():
             query[key] = value
@@ -77,28 +67,39 @@ def create_app():
             query['latest'] = True
             latest = True
         if "type" in query:
-            build_types = [query['type']]
-        else:
-            build_types = ["package", "qat", "exp"]
-        latest_builds = {}
-        for build_type in build_types:
-            query['type'] = build_type
-            latest_builds[build_type] = get_builds(query)
-        return render_template('index.html',
-                latest=latest,
-                servers=get_server_map(),
-                build_types=build_types,
-                latest_builds=latest_builds)
+            build_types = query['type'].split(',')
+            query['type'] = {'$in': build_types}
+        build_results = _get_builds(query)
+        return {'builds': build_results['builds'],
+                'filter': build_results['filter']}
 
-    @app.route('/builds/<buildid>')
-    def build(buildid):
+    @app.route('/api/1/builds')
+    def api_builds():
+        results = _builds()
+        return jsonify(results)
+
+    @app.route('/builds')
+    def builds():
+        results = _builds()
+        results['servers'] = get_server_map()
+        return render_template('builds.html', **results)
+
+    def _build(buildid):
         build = mongo.db.builds.find_one_or_404({'_id': buildid})
         ports = mongo.db.ports.find_one({'_id': buildid})
         fix_port_origins(ports)
-        return render_template('build.html',
-                build=build,
-                ports=ports,
-                servers=get_server_map())
+        return {'build': build, 'ports': ports}
+
+    @app.route('/api/1/builds/<buildid>')
+    def api_build(buildid):
+        results = _build(buildid)
+        return jsonify(results)
+
+    @app.route('/builds/<buildid>')
+    def build(buildid):
+        results = _build(buildid)
+        results['servers'] = get_server_map()
+        return render_template('build.html', **results)
 
     return app
 

@@ -1,23 +1,16 @@
 {% extends "base.html" %}
 
-{% block styles %}
-{{super()}}
-<link rel="stylesheet"
-      href="{{url_for('.static', filename='index.css')}}">
-{% endblock %}
-
 {% block content %}
 {{super()}}
 <div class="container">
-{% if latest %}
+{% if filter['latest'] %}
 Only displaying latest matching builds.
 {% endif %}
-{% for build_type in build_types %}
-{% if latest_builds[build_type]['results'] %}
+{% for build_type, builds in builds|groupby('type') %}
 <div class="container">
   <h1>{{ pkgstatus.linktype(build_type) }} Builds</h1>
 
-  {{ pkgstatus.print_filter(latest_builds[build_type].filter) }}
+  {{ pkgstatus.print_filter(filter, type=build_type) }}
 
   <table class="table">
     <thead>
@@ -41,7 +34,7 @@ Only displaying latest matching builds.
       </tr>
     </thead>
     <tbody>
-    {% for build in latest_builds[build_type]['results'] %}
+    {% for build in builds %}
       <tr id="{{ build._id }}">
         <td><a href="#{{ build._id }}">#</a></td>
         <td>{{ pkgstatus.linkset(build.setname) }}</td>
@@ -67,7 +60,6 @@ Only displaying latest matching builds.
     </tbody>
   </table>
 </div>
-{% endif %}
 {% endfor %}
 </div>
 {% endblock %}
