@@ -56,7 +56,7 @@
 
 {% macro linktype(build_type) -%}
 {{ build_type|capitalize }}&nbsp;
-<a title="All builds matching type {{ build_type }}" href="{{ url_for('builds', build_type=build_type) }}">{{ filter_icon() }}</a>
+<a title="All builds matching type {{ build_type }}" href="{{ url_for('builds', type=build_type) }}">{{ filter_icon() }}</a>
 {%- endmacro %}
 
 {% macro linklog(build, servers, text, pkgname) -%}
