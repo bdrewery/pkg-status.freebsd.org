@@ -245,9 +245,11 @@ for portids in db.ports.find({'new': {'$exists': False}},
 
     # Fetch the full port list for both builds to determine changes
     result_keys = ['built', 'failed', 'skipped', 'ignored']
+    query_filter = {x: '' for x in result_keys}
+    query_filter['pkgnames'] = ''
     ports_list = db.ports.find({
         '_id': { '$in': [build['_id'], previous_build['_id']] } },
-        {x: '' for x in result_keys})
+        query_filter)
     if ports_list[0]['_id'] == build['_id']:
         current_ports = ports_list[0]
         previous_ports = ports_list[1]
@@ -259,12 +261,12 @@ for portids in db.ports.find({'new': {'$exists': False}},
     new_stats = {}
     for result_key in result_keys:
         if result_key not in current_ports:
-            current_ports[result_key] = []
+            current_ports[result_key] = {}
         if result_key not in previous_ports:
-            previous_ports[result_key] = []
+            previous_ports[result_key] = {}
         new_list[result_key] = list(
-                set([x['origin'] for x in current_ports[result_key]]) -
-                set([x['origin'] for x in previous_ports[result_key]]))
+                set([x.replace('%', '.') for x in current_ports[result_key]]) -
+                set([x.replace('%', '.') for x in previous_ports[result_key]]))
         new_stats[result_key] = len(new_list[result_key])
     db.ports.update({'_id': build['_id']}, {'$set': {'new': new_list}})
     db.builds.update({'_id': build['_id']},
