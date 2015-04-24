@@ -59,6 +59,24 @@ def build_id_to_server(buildid):
 def build_id_to_buildname(buildid):
     return buildid.split(':')[4]
 
+def fix_ports(ports):
+    pkgnames = {}
+    # Gather all of the pkgnames and then remove them from each list
+    # mongo doesn't allow '.' in keys so key by something else
+    for key in ['built', 'failed', 'skipped', 'ignored']:
+        if key in ports:
+            new_obj = {}
+            for obj in ports[key]:
+                origin = obj['origin']
+                origin_key = origin.replace('.', '%')
+                pkgname = obj['pkgname']
+                pkgnames[origin_key] = pkgname
+                del(obj['pkgname'])
+                del(obj['origin'])
+                new_obj[origin_key] = obj
+            ports[key] = new_obj
+    ports['pkgnames'] = pkgnames
+
 conn = pymongo.Connection()
 db = conn.pkgstatus
 
@@ -162,6 +180,7 @@ with open("servers.txt", "r") as f:
 
                 if "ports" in build_info:
                     build_info["ports"]["_id"] = buildid
+                    fix_ports(build_info["ports"])
                     db.ports.update({"_id": buildid}, build_info["ports"],
                             upsert=True)
                     del(build_info["ports"])
@@ -242,3 +261,12 @@ for portids in db.ports.find({'new': {'$exists': False}},
     db.builds.update({'_id': build['_id']},
             {'$set': {'new_stats': new_stats,
                 'previous_id': previous_build['_id']}})
+
+# Repair pkgnames
+for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
+    # Fetch here rather than in the loop due to memory explosion
+    ports = db.ports.find_one({'_id': portids['_id']},
+        {x: '' for x in ['built', 'failed', 'skipped', 'ignored']})
+    print("Fixing pkgnames for %s" % portids['_id'])
+    fix_ports(ports)
+    db.ports.update({'_id': portids['_id']}, {'$set': ports})

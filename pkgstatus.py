@@ -34,6 +34,18 @@ def create_app():
                     ('buildname', pymongo.ASCENDING),
                     ]))}
 
+    # Mongo does not allow '.' in keys due to dot-notation.
+    def fix_port_origins(ports):
+        if 'pkgnames' not in ports:
+            return
+        for origin in ports['pkgnames']:
+            if '%' in origin:
+                fixed_origin = origin.replace('%', '.')
+                ports['pkgnames'][fixed_origin] = ports['pkgnames'].pop(origin)
+                for field in ['built', 'failed', 'skipped', 'ignored']:
+                    if origin in ports[field]:
+                        ports[field][fixed_origin] = ports[field].pop(origin)
+
     def get_server_map():
         return {x["_id"]:x for x in list(mongo.db.servers.find())}
 
@@ -82,13 +94,7 @@ def create_app():
     def build(buildid):
         build = mongo.db.builds.find_one_or_404({'_id': buildid})
         ports = mongo.db.ports.find_one({'_id': buildid})
-        # XXX: This should all be structured in the db
-        pkgnames = {}
-        ports['pkgnames'] = pkgnames
-        for key in ['built', 'failed', 'skipped', 'ignored']:
-            if key in ports:
-                for obj in ports[key]:
-                    pkgnames[obj['origin']] = obj['pkgname']
+        fix_port_origins(ports)
         return render_template('build.html',
                 build=build,
                 ports=ports,
