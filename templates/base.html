@@ -19,3 +19,8 @@
 {{super()}}
 {{fixes.ie8()}}
 {% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='pkgstatus.js') }}"></script>
+{% endblock %}

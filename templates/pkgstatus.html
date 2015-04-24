@@ -22,47 +22,47 @@
 {% set setname="default" %}
 {%- endif %}
 {{ setname }}&nbsp;
-<a title="All builds matching set {{ setname }}" href="{{ url_for('builds', setname=setname) }}"><span class="glyphicon glyphicon-filter"></span></a>
+<a data-toggle="tooltip" title="All builds matching set {{ setname }}" href="{{ url_for('builds', setname=setname) }}"><span class="glyphicon glyphicon-filter"></span></a>
 {% if setname[:2].upper() == "PR" and setname[2:].isdigit() %}
 {% set link="http://bugs.FreeBSD.org/" + setname[2:] %}
 {% elif setname[:1].upper() == "D" and setname[1:].isdigit() %}
 {% set link="http://reviews.FreeBSD.org/" + setname %}
 {% endif %}
 {% if link %}
-<a title="Related issue" href="{{ link }}"><span class="glyphicon glyphicon-share-alt"></span></a>
+<a data-toggle="tooltip" title="Related issue" href="{{ link }}"><span class="glyphicon glyphicon-share-alt"></span></a>
 {% endif %}
 {%- endmacro %}
 
 {% macro linkbuild(build, servers) -%}
-<a title"Build {{ build._id }}" href="{{ url_for('build', buildid=build._id)}}">{{ build.buildname }}</a>
-<a title="All builds matching buildname {{ build.buildname }}" href="{{ url_for('builds', buildname=build.buildname) }}">{{ filter_icon() }}</a>&nbsp;
+<a data-toggle="tooltip" title"Build {{ build._id }}" href="{{ url_for('build', buildid=build._id)}}">{{ build.buildname }}</a>
+<a data-toggle="tooltip" title="All builds matching buildname {{ build.buildname }}" href="{{ url_for('builds', buildname=build.buildname) }}">{{ filter_icon() }}</a>&nbsp;
 {{ linkpoudrierebuild(build, servers) }}
 {%- endmacro %}
 
 {% macro linkpoudrierebuild(build, servers) -%}
-<a target="_new" title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
+<a target="_new" data-toggle="tooltip" title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkmaster(build, servers) -%}
 {{ build.mastername }}&nbsp;
-<a target="_new" title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ poudriere_icon() }}</a>
+<a target="_new" data-toggle="tooltip" title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkserver(build, servers) -%}
 {{ build.server }}&nbsp;
-<a title="All builds matching servers {{ build.server }}" href="{{ url_for('builds', server=build.server) }}">{{ filter_icon() }}</a>
-<a target="_new" title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
+<a data-toggle="tooltip" title="All builds matching servers {{ build.server }}" href="{{ url_for('builds', server=build.server) }}">{{ filter_icon() }}</a>
+<a target="_new" data-toggle="tooltip" title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linktype(build_type) -%}
 {{ build_type|capitalize }}&nbsp;
-<a title="All builds matching type {{ build_type }}" href="{{ url_for('builds', type=build_type) }}">{{ filter_icon() }}</a>
+<a data-toggle="tooltip" title="All builds matching type {{ build_type }}" href="{{ url_for('builds', type=build_type) }}">{{ filter_icon() }}</a>
 {%- endmacro %}
 
 {% macro linklog(build, servers, text, pkgname) -%}
-<a target="_new" title="Build Log for {{ pkgname }}" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log"><span class="glyphicon glyphicon-file"></span>{{ text }}</a>
+<a target="_new" data-toggle="tooltip" title="Build Log for {{ pkgname }}" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log"><span class="glyphicon glyphicon-file"></span>{{ text }}</a>
 {%- endmacro %}
 
 {% macro linkorigin(origin) -%}
-<a target="_new" title="Portsmon for {{ origin }}" href="http://portsmon.freebsd.org/portoverview.py?category={{ origin.split('/')[0] }}&amp;portname={{ origin.split('/')[1] }}"><span class="glyphicon glyphicon-tasks"></span>{{ origin }}</a>
+<a target="_new" data-toggle="tooltip" title="Portsmon for {{ origin }}" href="http://portsmon.freebsd.org/portoverview.py?category={{ origin.split('/')[0] }}&amp;portname={{ origin.split('/')[1] }}"><span class="glyphicon glyphicon-tasks"></span>{{ origin }}</a>
 {%- endmacro %}
