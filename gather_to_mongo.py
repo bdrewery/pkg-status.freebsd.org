@@ -150,6 +150,8 @@ with open("servers.txt", "r") as f:
 
                 # Fetch the full build information
                 build_info = gather_build_info(server, mastername, buildname)
+                if build_info is None:
+                    continue
 
                 # XXX: This is not importable due to pkgname keys having '.'
                 if "skipped" in build_info:
