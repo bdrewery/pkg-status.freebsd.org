@@ -30,7 +30,6 @@ Only displaying latest matching builds.
         <th>Started (UTC)</th>
         <th>Elapsed</th>
         <th>Server</th>
-        <th>Jail builds</th>
       </tr>
     </thead>
     <tbody>
@@ -39,7 +38,7 @@ Only displaying latest matching builds.
         <td><a href="#{{ build._id }}">#</a></td>
         <td>{{ pkgstatus.linkset(build.setname) }}</td>
         <td>{{ build.ptname }}</td>
-        <td>{{ build.jailname }}</td>
+        <td>{{ pkgstatus.linkjail(build, servers) }}</td>
         <td>{{ pkgstatus.linkbuild(build, servers) }}</td>
         <td>{{ build.stats.queued }}</td>
         {% for stat in ["built", "failed", "skipped", "ignored"] %}
@@ -54,7 +53,6 @@ Only displaying latest matching builds.
         <td>{{ (build.snap.now - build.snap.elapsed) | datetime }}</td>
         <td>{{ build.snap.elapsed|duration }}</td>
         <td>{{ pkgstatus.linkserver(build, servers) }}</td>
-        <td>{{ pkgstatus.linkmaster(build, servers) }}</td>
       </tr>
     {%- endfor -%}
     </tbody>
