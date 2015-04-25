@@ -1,6 +1,5 @@
 -sqlite3==0.0.0
 atomicfile==1.0
-datatables==0.4.9
 Flask==0.10.1
 Flask-Bootstrap==3.3.2.1
 Flask-PyMongo==0.3.1
