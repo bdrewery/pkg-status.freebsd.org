@@ -3,6 +3,7 @@
 {% block content %}
 {{super()}}
 <div class="container">
+<div>
   <dl class="dl-horizontal">
     <dt>Build</dt>
     <dd id="buildname">{{ pkgstatus.linkbuild(build, servers) }}</dd>
@@ -27,7 +28,7 @@
   </dl>
 </div>
 
-<div class="container">
+<div>
   <table class="table">
     <thead>
       <tr>
@@ -100,5 +101,6 @@
   {%- endif %}
   {%- endfor %}
   {%- endif %}
+</div>
 </div>
 {% endblock %}

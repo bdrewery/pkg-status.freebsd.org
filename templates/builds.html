@@ -2,12 +2,12 @@
 
 {% block content %}
 {{super()}}
-<div class="container">
+<div class="container-fluid">
 {% if filter['latest'] %}
 Only displaying latest matching builds.
 {% endif %}
 {% for build_type, builds in builds|groupby('type') %}
-<div class="container">
+<div>
   <h1>{{ pkgstatus.linktype(build_type) }} Builds</h1>
 
   {{ pkgstatus.print_filter(filter, type=build_type) }}
