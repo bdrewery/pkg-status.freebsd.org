@@ -190,7 +190,7 @@ with open("servers.txt", "r") as f:
                 build_info["_id"] = buildid
                 build_info["server"] = server_short
                 build_info["type"] = server_type
-                if build_info["type"] in qat_sets:
+                if setname in qat_sets:
                     build_info["type"] = "qat"
                 if build is not None:
                     print("Updating %s / %s: %s" % (mastername, buildname,
