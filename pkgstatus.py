@@ -53,34 +53,34 @@ def create_app():
     def index():
         return builds()
 
-    def _builds():
-        query = {}
-        for key, value in request.args.iteritems():
-            query[key] = value
-        if "setname" in query:
-            if query['setname'] == "default":
-                query['setname'] = ''
-        if "all" in query:
-            del(query['all'])
-            latest = False
-        else:
-            query['latest'] = True
-            latest = True
-        if "type" in query:
-            build_types = query['type'].split(',')
-            query['type'] = {'$in': build_types}
+    def _builds(filter):
+        query = {'latest': True}
+        latest = True
+        if filter is not None:
+            for key, value in filter.iteritems():
+                query[key] = value
+            if "setname" in query:
+                if query['setname'] == "default":
+                    query['setname'] = ''
+            if "all" in query:
+                del(query['all'])
+                del(query['latest'])
+                latest = False
+            if "type" in query:
+                build_types = query['type'].split(',')
+                query['type'] = {'$in': build_types}
         build_results = _get_builds(query)
         return {'builds': build_results['builds'],
                 'filter': build_results['filter']}
 
     @app.route('/api/1/builds')
     def api_builds():
-        results = _builds()
+        results = _builds(request.args.get('filter', {}))
         return jsonify(results)
 
     @app.route('/builds')
     def builds():
-        results = _builds()
+        results = _builds(request.args)
         results['servers'] = get_server_map()
         return render_template('builds.html', **results)
 

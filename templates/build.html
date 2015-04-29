@@ -56,8 +56,9 @@
   Compared to the <a href="{{ url_for('build', buildid=build.previous_id) }}">previous build</a>
   {% for stat in ["failed", "skipped", "ignored"] -%}
   {% if build.new_stats[stat] -%}
-  <h2>New {{ stat|capitalize }}</h2>
-  <table class="table">
+  <h2 id="new_{{ stat }}">New {{ stat|capitalize }}</h2>
+  <table class="table display compact text-nowrap"
+    data-datatable="true" id="table_new_{{ stat }}" width="100%">
     <thead>
       <tr>
         <th>Package</th>
@@ -92,7 +93,9 @@
             {% elif stat == "failed" %}
             {% set reason=ports[stat][origin].errortype %}
             {%- endif %}
-            <td>{{ pkgstatus.linklog(build, servers, reason, ports.pkgnames[origin]) }}</td>
+            <td data-order="{{ reason }}">
+              {{ pkgstatus.linklog(build, servers, reason, ports.pkgnames[origin]) }}
+            </td>
           {%- endif %}
         </tr>
       {%- endfor %}

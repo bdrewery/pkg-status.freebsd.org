@@ -12,20 +12,20 @@ Only displaying latest matching builds.
 
   {{ pkgstatus.print_filter(filter, type=build_type) }}
 
-  <table class="table">
+  <table class="table display compact text-nowrap"
+    data-datatable="true" id="table_{{ build_type }}" width="100%">
     <thead>
       <tr>
-        <th></th>
         <th>Set</th>
         <th>Ports</th>
         <th>Jail</th>
         <th>Build</th>
-        <th class="queued">Queued</th>
-        <th class="built">Built</th>
-        <th class="failed">Failed</th>
-        <th class="skipped">Skipped</th>
-        <th class="ignored">Ignored</th>
-        <th class="remaining">Remaining</th>
+        <th class="queued" title="Queued" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Queued</span><span class="hidden-md hidden-lg">Q</th>
+        <th class="built" title="Built" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Built</span><span class="hidden-md hidden-lg">B</th>
+        <th class="failed" title="Failed" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Failed</span><span class="hidden-md hidden-lg">F</th>
+        <th class="skipped" title="Skipped" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Skipped</span><span class="hidden-md hidden-lg">S</th>
+        <th class="ignored" title="Ignored" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Ignored</span><span class="hidden-md hidden-lg">I</th>
+        <th class="remaining" title="Remaining" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Remaining</span><span class="hidden-md hidden-lg">R</th>
         <th>Status</th>
         <th>Started (UTC)</th>
         <th>Elapsed</th>
@@ -35,23 +35,29 @@ Only displaying latest matching builds.
     <tbody>
     {% for build in builds %}
       <tr id="{{ build._id }}">
-        <td><a href="#{{ build._id }}">#</a></td>
         <td>{{ pkgstatus.linkset(build.setname) }}</td>
         <td>{{ build.ptname }}</td>
         <td>{{ pkgstatus.linkjail(build, servers) }}</td>
         <td>{{ pkgstatus.linkbuild(build, servers) }}</td>
-        <td>{{ build.stats.queued }}</td>
+        <td data-filter="no">{{ build.stats.queued }}</td>
         {% for stat in ["built", "failed", "skipped", "ignored"] %}
-        <td>{{ build.stats[stat] }}
+        <td data-filter="no" data-order="{{ build.stats[stat] }}">{{ build.stats[stat] }}
           {%- if build.new_stats and build.new_stats[stat] -%}
-          &nbsp;<a href="{{ url_for('build', buildid=build._id) }}">(+{{ build.new_stats[stat] }})</a>
+          &nbsp;<a
+            href="{{ url_for('build', buildid=build._id) }}#new_{{ stat }}">
+            (+{{ build.new_stats[stat] }})
+          </a>
           {%- endif -%}
         </td>
         {% endfor %}
-        <td>{{ build.stats.remaining }}</td>
+        <td data-filter="no">{{ build.stats.remaining }}</td>
         <td>{{ build.status }}</td>
-        <td>{{ (build.snap.now - build.snap.elapsed) | datetime }}</td>
-        <td>{{ build.snap.elapsed|duration }}</td>
+        <td data-order="{{ (build.snap.now - build.snap.elapsed) }}">
+          {{ (build.snap.now - build.snap.elapsed) | datetime }}
+        </td>
+        <td data-order="{{ build.snap.elapsed }}">
+          {{ build.snap.elapsed|duration }}
+        </td>
         <td>{{ pkgstatus.linkserver(build, servers) }}</td>
       </tr>
     {%- endfor -%}

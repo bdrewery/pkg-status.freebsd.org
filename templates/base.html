@@ -4,8 +4,10 @@
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet"
-      href="{{url_for('.static', filename='pkgstatus.css')}}">
+{# <link rel="stylesheet" href="//cdn.datatables.net/1.10.6/css/jquery.dataTables.min.css"></link> #}
+<link rel="stylesheet" href="//cdn.datatables.net/responsive/1.0.5/css/dataTables.responsive.css"></link>
+<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/1.10.6/integration/bootstrap/3/dataTables.bootstrap.css"></link>
+<link rel="stylesheet" href="{{url_for('.static', filename='pkgstatus.css')}}"></link>
 {% endblock %}
 
 {% block content %}
@@ -22,5 +24,8 @@
 
 {% block scripts %}
 {{super()}}
+<script src="//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js"></script>
+<script src="//cdn.datatables.net/responsive/1.0.5/js/dataTables.responsive.js"></script>
+<script src="//cdn.datatables.net/plug-ins/1.10.6/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
 <script src="{{ url_for('static', filename='pkgstatus.js') }}"></script>
 {% endblock %}

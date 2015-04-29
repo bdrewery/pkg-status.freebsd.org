@@ -9,3 +9,11 @@
 .ignored .row1 { background-color: #FF6F00; }
 .remaining { background-color: #E3E3E3 !important; }
 .latest { background-color: #f7Fe4a; }
+
+/*
+table.dataTable thead th,
+table.dataTable tbody td {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+*/
