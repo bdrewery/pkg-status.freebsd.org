@@ -77,7 +77,7 @@ def fix_port_origins(ports):
             ports[key] = new_obj
     ports['pkgnames'] = pkgnames
 
-def process_new_failures(build):
+def process_new_failures(build, current=False):
     # Find the previous matching build or skip if there is none. Only consider
     # passing builds.
     if build['type'] in ["package", "qat"]:
@@ -95,22 +95,27 @@ def process_new_failures(build):
     if len(previous_build) == 0:
         return False
     previous_build = previous_build[0]
-    print("Processing new failures for %s. Previous build build %s" % (
+    print("Processing new failures for %s. Previous build %s" % (
         build['_id'], previous_build['_id']))
 
     # Fetch the full port list for both builds to determine changes
     result_keys = ['built', 'failed', 'skipped', 'ignored']
     query_filter = {x: '' for x in result_keys}
     query_filter['pkgnames'] = ''
-    ports_list = db.ports.find({
-        '_id': { '$in': [build['_id'], previous_build['_id']] } },
-        query_filter)
-    if ports_list[0]['_id'] == build['_id']:
-        current_ports = ports_list[0]
-        previous_ports = ports_list[1]
+    if current:
+        previous_ports = db.ports.find_one({'_id': previous_build['_id']},
+                query_filter)
+        current_ports = build['ports']
     else:
-        previous_ports = ports_list[0]
-        current_ports = ports_list[1]
+        ports_list = db.ports.find({
+            '_id': { '$in': [build['_id'], previous_build['_id']] } },
+            query_filter)
+        if ports_list[0]['_id'] == build['_id']:
+            current_ports = ports_list[0]
+            previous_ports = ports_list[1]
+        else:
+            previous_ports = ports_list[0]
+            current_ports = ports_list[1]
     # Determine differences and store back
     new_list = {}
     new_stats = {}
@@ -240,7 +245,7 @@ with open("servers.txt", "r") as f:
                 if "ports" in build_info:
                     build_info["ports"]["_id"] = buildid
                     fix_port_origins(build_info["ports"])
-                    process_new_failures(build_info)
+                    process_new_failures(build_info, current=True)
                     db.ports.update({"_id": buildid}, build_info["ports"],
                             upsert=True)
                     del(build_info["ports"])
