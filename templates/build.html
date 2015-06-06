@@ -20,7 +20,7 @@
     <dt>Build type</dt>
     <dd id="build_type">{{ pkgstatus.linktype(build.type) }}</dd>
     <dt>Start time</dt>
-    <dd id="start_time">{{ (build.snap.now - build.snap.elapsed) | datetime }}</dd>
+    <dd id="start_time">{{ (build.started) | datetime }}</dd>
     <dt>Elapsed</dt>
     <dd id="elapsed">{{ build.snap.elapsed | duration }}</dd>
     <dt>SVN</dt>

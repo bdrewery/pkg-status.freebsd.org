@@ -59,6 +59,16 @@ def build_id_to_server(buildid):
 def build_id_to_buildname(buildid):
     return buildid.split(':')[4]
 
+def calc_started(build_info):
+    if "started" in build_info:
+        build_info['started'] = int(build_info['started'])
+    elif "snap" in build_info and "now" in build_info['snap'] \
+            and "elapsed" in build_info['snap']:
+        build_info['started'] = build_info['snap']['now'] - \
+                build_info['snap']['elapsed']
+    else:
+        build_info['started'] = 0
+
 def fix_port_origins(ports):
     pkgnames = {}
     # Gather all of the pkgnames and then remove them from each list
@@ -85,8 +95,8 @@ def process_new_failures(build, current=False):
         previous_build = list(db.builds.find({
             'mastername': build['mastername'], 'type': build['type'],
             'status': 'stopped:done:',
-            'snap.now': {'$lt': build['snap']['now']}}).sort(
-                    [('snap.now', pymongo.DESCENDING)]).limit(1))
+            'started': {'$lt': build['started']}}).sort(
+                    [('started', pymongo.DESCENDING)]).limit(1))
     else:
         # Compare exp runs to a previous baseline
         # XXX
@@ -137,6 +147,15 @@ conn = pymongo.Connection()
 db = conn.pkgstatus
 
 qat_sets = ["qat", "baseline", "build-as-user"]
+
+# Repair start times
+for build_info in db.builds.find({'started': {'$exists': False}}, {"_id": "",
+    'snap.now': '', 'snap.elapsed': ''}):
+    calc_started(build_info)
+    print("Setting started to '%d' for %s" % (build_info['started'],
+        build_info['_id']))
+    db.builds.update({'_id': build_info['_id']},
+            {'$set': {'started': build_info['started']}})
 
 # Import new data
 with open("servers.txt", "r") as f:
@@ -232,6 +251,8 @@ with open("servers.txt", "r") as f:
                         if snapkey in build_info["snap"]:
                             build_info["snap"][snapkey] = \
                                     int(build_info["snap"][snapkey])
+                # Convert and/or calculated started epoch time.
+                calc_started(build_info)
 
                 # Trim idle jobs to save db space
                 if "jobs" in build_info:
@@ -279,8 +300,8 @@ for portids in db.ports.find({'new': {'$exists': False}},
 
     # Get current build info
     build = db.builds.find_one({'_id': portids['_id'],
-        'status': 'stopped:done:', 'snap.now': {'$exists': True}},
-        {'mastername': '', 'type': '', 'snap.now': ''})
+        'status': 'stopped:done:', 'started': {'$exists': True}},
+        {'mastername': '', 'type': '', 'started': ''})
     # Ignore legacy data (no snap.now) and crashed builds.
     if build is None:
         db.ports.update({'_id': portids['_id']}, {'$set': {'new': []}})

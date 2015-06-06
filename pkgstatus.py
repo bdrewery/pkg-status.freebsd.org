@@ -27,7 +27,7 @@ def create_app():
     def _get_builds(selector):
         return {'filter': selector,
                 'builds': list(mongo.db.builds.find(selector).sort([
-                    ('snap.now - snap.elapsed', pymongo.DESCENDING),
+                    ('started', pymongo.DESCENDING),
                     ('setname', pymongo.ASCENDING),
                     ('ptname', pymongo.ASCENDING),
                     ('jailname', pymongo.ASCENDING),

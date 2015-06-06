@@ -52,8 +52,8 @@ Only displaying latest matching builds.
         {% endfor %}
         <td data-filter="no">{{ build.stats.remaining }}</td>
         <td>{{ build.status }}</td>
-        <td data-order="{{ (build.snap.now - build.snap.elapsed) }}">
-          {{ (build.snap.now - build.snap.elapsed) | datetime }}
+        <td data-order="{{ (build.started) }}">
+          {{ (build.started) | datetime }}
         </td>
         <td data-order="{{ build.snap.elapsed }}">
           {{ build.snap.elapsed|duration }}
