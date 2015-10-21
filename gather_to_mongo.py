@@ -17,8 +17,11 @@ def fetch_data(server, path):
         print("Timeout to %s" % url)
         return None
     if response.status_code == 200:
-        json = response.json()
-        return json
+        try:
+            json = response.json()
+            return json
+        except:
+            pass
     return None
 
 def gather_masternames(server):
