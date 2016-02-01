@@ -1,1 +1,1 @@
-gunicorn = gunicorn -w 5 pkgstatus:app /tmp/pkg-status.sock
+gunicorn = gunicorn -w 5 pkgstatus:app -b unix:/tmp/pkg-status.sock
