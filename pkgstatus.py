@@ -53,16 +53,6 @@ def create_app():
     def index():
         return builds()
 
-    def _ports(filter, origin):
-        ports_filter = {'$or': []}
-        for key_type in ['built', 'failed', 'skipped', 'ignored']:
-            ports_filter['$or'].append({"%s.%s" % (key_type, origin): {
-                '$exists': True}})
-        buildids = list(mongo.db.ports.find(ports_filter, {'_id': ''}))
-        print(ports_filter)
-        print(buildids)
-        return _builds(filter)
-
     def _builds(filter):
         query = {'latest': True}
         latest = True
@@ -93,13 +83,6 @@ def create_app():
         results = _builds(request.args)
         results['servers'] = get_server_map()
         return render_template('builds.html', **results)
-
-    @app.route('/ports/<path:origin>')
-    def ports(origin):
-        results = _ports(request.args, origin)
-        results['servers'] = get_server_map()
-        return jsonify(results)
-#        return render_template('builds.html', **results)
 
     def _build(buildid):
         build = mongo.db.builds.find_one_or_404({'_id': buildid})
