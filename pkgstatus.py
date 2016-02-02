@@ -1,8 +1,10 @@
 import datetime
 import json
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, make_response
+from flask_jsglue import JSGlue
 from flask_bootstrap import Bootstrap
 from flask.ext.pymongo import PyMongo
+from urllib import urlencode
 import flask.ext.pymongo as pymongo
 import os
 import time
@@ -11,6 +13,8 @@ def create_app():
     app = Flask(__name__, static_folder='public/static', static_url_path='/static')
     Bootstrap(app)
     mongo = PyMongo(app)
+    jsglue = JSGlue(app)
+    filter_keys = ['all', 'type', 'setname', 'buildname']
 
     @app.template_filter('duration')
     def duration_filter(s):
@@ -24,9 +28,9 @@ def create_app():
         date = datetime.datetime.fromtimestamp(int(timestamp))
         return time.strftime(format, time.gmtime(int(timestamp)))
 
-    def _get_builds(selector):
+    def _get_builds(selector, projection=None):
         return {'filter': selector,
-                'builds': list(mongo.db.builds.find(selector).sort([
+                'builds': list(mongo.db.builds.find(selector, projection).sort([
                     ('started', pymongo.DESCENDING),
                     ('setname', pymongo.ASCENDING),
                     ('ptname', pymongo.ASCENDING),
@@ -53,12 +57,23 @@ def create_app():
     def index():
         return builds()
 
-    def _builds(filter):
+    @app.route('/servers.js')
+    def servers_js():
+        return make_response("var servers = %s;" % (json.dumps(get_server_map())),
+                200, {'Content-Type': 'text/javascript'});
+
+    def _get_filter():
         query = {'latest': True}
+        projection = {
+                'jobs': False,
+                'snap.now': False,
+        }
         latest = True
-        if filter is not None:
-            for key, value in filter.iteritems():
-                query[key] = value
+        if request.args is not None:
+            for key, value in request.args.iteritems():
+                if key in filter_keys:
+                    query[key] = value
+            filter = query.copy()
             if "setname" in query:
                 if query['setname'] == "default":
                     query['setname'] = ''
@@ -69,18 +84,29 @@ def create_app():
             if "type" in query:
                 build_types = query['type'].split(',')
                 query['type'] = {'$in': build_types}
-        build_results = _get_builds(query)
+        return (query, projection, filter)
+
+    def _builds():
+        query, projection, filter = _get_filter()
+        build_results = _get_builds(query, projection)
+
+        filter_qs_filter = filter.copy()
+        del filter_qs_filter['type']
+        filter_qs = urlencode(filter_qs_filter)
+
         return {'builds': build_results['builds'],
-                'filter': build_results['filter']}
+                'filter': build_results['filter'],
+                'filter_qs': filter_qs}
 
     @app.route('/api/1/builds')
     def api_builds():
-        results = _builds(request.args.get('filter', {}))
+        results = _builds()
+        del results['filter_qs']
         return jsonify(results)
 
     @app.route('/builds')
     def builds():
-        results = _builds(request.args)
+        results = _builds()
         results['servers'] = get_server_map()
         return render_template('builds.html', **results)
 

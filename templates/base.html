@@ -19,7 +19,9 @@
 
 {% block head %}
 {{super()}}
+{{JSGlue.include()}}
 {{fixes.ie8()}}
+<script src="{{ url_for('servers_js') }}" type="text/javascript"></script>
 {% endblock %}
 
 {% block scripts %}

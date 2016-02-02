@@ -13,26 +13,27 @@ Only displaying latest matching builds.
   {{ pkgstatus.print_filter(filter, type=build_type) }}
 
   <table class="table display compact text-nowrap"
-    data-datatable="true" id="table_{{ build_type }}" width="100%">
+    data-datatable="true" data-dt-url="{{ url_for('api_builds', type=build_type ) }}&amp;{{ filter_qs|safe }}" data-dt-datasrc="builds" id="table_{{ build_type }}" width="100%">
     <thead>
       <tr>
-        <th>Set</th>
-        <th>Ports</th>
-        <th>Jail</th>
-        <th>Build</th>
-        <th class="queued" title="Queued" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Queued</span><span class="hidden-md hidden-lg">Q</th>
-        <th class="built" title="Built" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Built</span><span class="hidden-md hidden-lg">B</th>
-        <th class="failed" title="Failed" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Failed</span><span class="hidden-md hidden-lg">F</th>
-        <th class="skipped" title="Skipped" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Skipped</span><span class="hidden-md hidden-lg">S</th>
-        <th class="ignored" title="Ignored" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Ignored</span><span class="hidden-md hidden-lg">I</th>
-        <th class="remaining" title="Remaining" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Remaining</span><span class="hidden-md hidden-lg">R</th>
-        <th>Status</th>
-        <th>Started (UTC)</th>
-        <th>Elapsed</th>
-        <th>Server</th>
+        <th data-dt-col="setname" data-dt-col-formatter="linkset">Set</th>
+        <th data-dt-col="ptname">Ports</th>
+        <th data-dt-col="jailname" data-dt-col-formatter="linkjail">Jail</th>
+        <th data-dt-col="buildname" data-dt-col-formatter="linkbuild">Build</th>
+        <th data-dt-col="stats.queued" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="queued" title="Queued" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Queued</span><span class="hidden-md hidden-lg">Q</th>
+        <th data-dt-col="stats.built" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="built" title="Built" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Built</span><span class="hidden-md hidden-lg">B</th>
+        <th data-dt-col="stats.failed" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="failed" title="Failed" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Failed</span><span class="hidden-md hidden-lg">F</th>
+        <th data-dt-col="stats.skipped" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="skipped" title="Skipped" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Skipped</span><span class="hidden-md hidden-lg">S</th>
+        <th data-dt-col="stats.ignored" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="ignored" title="Ignored" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Ignored</span><span class="hidden-md hidden-lg">I</th>
+        <th data-dt-col="stats.remaining" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="remaining" title="Remaining" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Remaining</span><span class="hidden-md hidden-lg">R</th>
+        <th data-dt-col="status">Status</th>
+        <th data-dt-col="started" data-dt-col-formatter="datetime" data-dt-col-type="numeric">Started (UTC)</th>
+        <th data-dt-col="snap.elapsed" data-dt-col-formatter="duration" data-dt-col-type="numeric">Elapsed</th>
+        <th data-dt-col="server" data-dt-col-formatter="linkserver">Server</th>
       </tr>
     </thead>
     <tbody>
+    {% if false %}
     {% for build in builds %}
       <tr id="{{ build._id }}">
         <td>{{ pkgstatus.linkset(build.setname) }}</td>
@@ -61,6 +62,7 @@ Only displaying latest matching builds.
         <td>{{ pkgstatus.linkserver(build, servers) }}</td>
       </tr>
     {%- endfor -%}
+    {% endif %}
     </tbody>
   </table>
 </div>
