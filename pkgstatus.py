@@ -91,7 +91,8 @@ def create_app():
         build_results = _get_builds(query, projection)
 
         filter_qs_filter = filter.copy()
-        del filter_qs_filter['type']
+        if 'type' in filter_qs_filter:
+            del filter_qs_filter['type']
         filter_qs = urlencode(filter_qs_filter)
 
         return {'builds': build_results['builds'],
