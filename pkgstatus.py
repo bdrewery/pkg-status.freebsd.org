@@ -47,7 +47,7 @@ def create_app():
                 fixed_origin = origin.replace('%', '.')
                 ports['pkgnames'][fixed_origin] = ports['pkgnames'].pop(origin)
                 for field in ['built', 'failed', 'skipped', 'ignored']:
-                    if origin in ports[field]:
+                    if field in ports and origin in ports[field]:
                         ports[field][fixed_origin] = ports[field].pop(origin)
 
     def get_server_map():
