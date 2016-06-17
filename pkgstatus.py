@@ -14,7 +14,7 @@ def create_app():
     Bootstrap(app)
     mongo = PyMongo(app)
     jsglue = JSGlue(app)
-    filter_keys = ['all', 'type', 'setname', 'buildname']
+    filter_keys = ['all', 'type', 'setname', 'buildname', 'jailname', 'server']
 
     @app.template_filter('duration')
     def duration_filter(s):
