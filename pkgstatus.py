@@ -77,7 +77,7 @@ def create_app():
             if "setname" in query:
                 if query['setname'] == "default":
                     query['setname'] = ''
-            if "all" in query:
+            if "all" in query or "buildname" in query:
                 del(query['all'])
                 del(query['latest'])
                 latest = False

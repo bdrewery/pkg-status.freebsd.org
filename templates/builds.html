@@ -6,7 +6,7 @@
 {% if filter['latest'] %}
 Only displaying latest matching builds.
 <a href="javascript:window.location.href=window.location.href + ((window.location.href.indexOf('?') == -1) ? '?' : '&') + 'all=1'">View all</a>
-{% else %}
+{% elif not filter['buildname'] %}
 Viewing all matching builds.
 <a href="javascript:window.location.href=window.location.href.replace('&all=1', '').replace('?all=1&', '?').replace('?all=1', '')">View latest only</a>
 {% endif %}
