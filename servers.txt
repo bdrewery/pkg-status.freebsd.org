@@ -9,10 +9,10 @@ exp:gohan1.ysv.freebsd.org
 exp:gohan2.ysv.freebsd.org
 exp:gohan3.ysv.freebsd.org
 exp:gohan4.ysv.freebsd.org
-package:beefy1.isc.freebsd.org
-package:beefy2.isc.freebsd.org
-package:beefy3.isc.freebsd.org
-package:beefy4.isc.freebsd.org
+package:beefy1.nyi.freebsd.org
+package:beefy2.nyi.freebsd.org
+package:beefy3.nyi.freebsd.org
+package:beefy4.nyi.freebsd.org
 package:beefy5.nyi.freebsd.org
 package:beefy6.nyi.freebsd.org
 package:beefy7.nyi.freebsd.org
