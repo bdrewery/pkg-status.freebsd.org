@@ -49,7 +49,11 @@
 {%- endmacro %}
 
 {% macro linkpoudrierebuild(build, servers) -%}
+{% if build['have_logs'] %}
+<a target="_new" data-toggle="tooltip" title="Poudriere Build" href="/logs/{{ build.server }}/{{ build.mastername }}/{{ build.buildname }}">{{ poudriere_icon() }}</a>
+{% else %}
 <a target="_new" data-toggle="tooltip" title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
+{% endif %}
 {%- endmacro %}
 
 {% macro linkjail(build, servers) -%}
