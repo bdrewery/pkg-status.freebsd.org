@@ -48,9 +48,13 @@
 <a data-toggle="tooltip" title"Build {{ build._id }}" href="{{ url_for('build', buildid=build._id)}}">{{ build.buildname }}</a>
 {%- endmacro %}
 
+{% macro local_log_base(build) -%}
+/logs/{{ build.server }}/{{ build.mastername }}/{{ build.buildname }}
+{%- endmacro %}
+
 {% macro linkpoudrierebuild(build, servers) -%}
 {% if build['have_logs'] %}
-<a target="_new" data-toggle="tooltip" title="Poudriere Build" href="/logs/{{ build.server }}/{{ build.mastername }}/{{ build.buildname }}">{{ poudriere_icon() }}</a>
+<a target="_new" data-toggle="tooltip" title="Poudriere Build" href="{{ local_log_base(build) }}">{{ poudriere_icon() }}</a>
 {% else %}
 <a target="_new" data-toggle="tooltip" title="Poudriere Build" href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}">{{ poudriere_icon() }}</a>
 {% endif %}
@@ -74,7 +78,11 @@
 {%- endmacro %}
 
 {% macro linklog(build, servers, text, pkgname) -%}
+{% if build['have_logs'] %}
+<a target="_new" data-toggle="tooltip" title="Build Log for {{ pkgname }}" href="{{ local_log_base(build) }}/logs/{{ pkgname }}.log"><span class="glyphicon glyphicon-file"></span>{{ text }}</a>
+{% else %}
 <a target="_new" data-toggle="tooltip" title="Build Log for {{ pkgname }}" href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log"><span class="glyphicon glyphicon-file"></span>{{ text }}</a>
+{% endif %}
 {%- endmacro %}
 
 {% macro linkorigin(origin) -%}
