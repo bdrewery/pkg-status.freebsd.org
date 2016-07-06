@@ -115,7 +115,8 @@ def create_app():
     def _build(buildid):
         build = mongo.db.builds.find_one_or_404({'_id': buildid})
         ports = mongo.db.ports.find_one({'_id': buildid})
-        fix_port_origins(ports)
+        if ports is not None:
+            fix_port_origins(ports)
         return {'build': build, 'ports': ports}
 
     @app.route('/api/1/builds/<buildid>')
