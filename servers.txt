@@ -19,3 +19,4 @@ package:beefy7.nyi.freebsd.org
 package:beefy8.nyi.freebsd.org
 package:beefy9.nyi.freebsd.org
 package:beefy10.nyi.freebsd.org
+package:thunderx1.nyi.freebsd.org
