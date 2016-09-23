@@ -297,7 +297,7 @@ for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
 
 # Process new failures
 for portids in db.ports.find({'new': {'$exists': False}},
-        {"_id": ""}):
+        {"_id": ""}).sort([('_id', pymongo.ASCENDING)]):
     # This is not done above as it would load several GB of data.
     # Need to fetch current and previous build's data.
 
