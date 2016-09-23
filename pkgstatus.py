@@ -3,9 +3,9 @@ import json
 from flask import Flask, jsonify, render_template, request, make_response
 from flask_jsglue import JSGlue
 from flask_bootstrap import Bootstrap
-from flask.ext.pymongo import PyMongo
+from flask_pymongo import PyMongo
 from urllib import urlencode
-import flask.ext.pymongo as pymongo
+import flask_pymongo as pymongo
 import os
 import time
 

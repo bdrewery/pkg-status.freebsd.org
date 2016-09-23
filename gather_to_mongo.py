@@ -147,8 +147,7 @@ def process_new_failures(build, current=False):
     build['previous_id'] = previous_build['_id']
     return True
 
-conn = pymongo.Connection()
-db = conn.pkgstatus
+db = pymongo.MongoClient().pkgstatus
 
 qat_sets = ["qat", "baseline", "build-as-user"]
 
