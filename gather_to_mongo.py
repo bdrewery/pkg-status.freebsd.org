@@ -129,6 +129,7 @@ def process_new_failures(build, current=False):
         else:
             previous_ports = ports_list[0]
             current_ports = ports_list[1]
+        build['ports'] = current_ports
     # Determine differences and store back
     new_list = {}
     new_stats = {}
@@ -311,8 +312,9 @@ for portids in db.ports.find({'new': {'$exists': False}},
         continue
     if not process_new_failures(build):
         continue
-    db.ports.update({'_id': build['_id']}, {'$set': {'new': new_list}})
+    db.ports.update({'_id': build['_id']},
+            {'$set': {'new': build['ports']['new']}})
     db.builds.update({'_id': build['_id']},
-            {'$set': {'new_stats': new_stats,
-                'previous_id': previous_build['_id']}})
+            {'$set': {'new_stats': build['new_stats'],
+                'previous_id': build['previous_id']}})
 
