@@ -31,7 +31,6 @@ requests==2.22.0
 simplegeneric==0.8.1
 six==1.10.0
 sqlite3==0.0.0
-Tkinter==0.0.0
 traitlets==4.2.1
 urllib3==1.25.6
 Werkzeug==0.16.0
