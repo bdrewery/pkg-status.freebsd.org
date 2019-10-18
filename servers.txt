@@ -25,5 +25,7 @@ package:beefy13.nyi.freebsd.org
 package:beefy14.nyi.freebsd.org
 package:beefy15.nyi.freebsd.org
 package:beefy16.nyi.freebsd.org
+package:beefy17.nyi.freebsd.org
+package:beefy18.nyi.freebsd.org
 package:thunderx1.nyi.freebsd.org
 package:pylon.nyi.freebsd.org
