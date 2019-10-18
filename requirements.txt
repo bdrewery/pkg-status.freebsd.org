@@ -24,7 +24,7 @@ pexpect==4.1.0
 pickleshare==0.7.2
 ptyprocess==0.5.1
 pymongo==3.3.0
-requests==2.6.0
+requests==2.20.0
 simplegeneric==0.8.1
 six==1.10.0
 traitlets==4.2.1
