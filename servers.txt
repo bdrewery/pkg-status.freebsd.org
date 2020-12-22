@@ -29,3 +29,5 @@ package:beefy17.nyi.freebsd.org
 package:beefy18.nyi.freebsd.org
 package:thunderx1.nyi.freebsd.org
 package:pylon.nyi.freebsd.org
+package:ampere1.nyi.freebsd.org
+package:ampere2.nyi.freebsd.org
