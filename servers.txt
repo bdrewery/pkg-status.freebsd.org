@@ -5,10 +5,11 @@ exp:package20.nyi.freebsd.org
 exp:package21.nyi.freebsd.org
 exp:package22.nyi.freebsd.org
 exp:package23.nyi.freebsd.org
-exp:gohan1.ysv.freebsd.org
-exp:gohan2.ysv.freebsd.org
-exp:gohan3.ysv.freebsd.org
-exp:gohan4.ysv.freebsd.org
+exp:gohan01.nyi.freebsd.org
+exp:gohan02.nyi.freebsd.org
+exp:gohan03.nyi.freebsd.org
+exp:gohan04.nyi.freebsd.org
+exp:gohan05.nyi.freebsd.org
 package:beefy1.nyi.freebsd.org
 package:beefy2.nyi.freebsd.org
 package:beefy3.nyi.freebsd.org
@@ -29,3 +30,5 @@ package:beefy17.nyi.freebsd.org
 package:beefy18.nyi.freebsd.org
 package:thunderx1.nyi.freebsd.org
 package:pylon.nyi.freebsd.org
+package:ampere1.nyi.freebsd.org
+package:ampere2.nyi.freebsd.org
