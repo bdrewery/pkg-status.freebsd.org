@@ -51,7 +51,8 @@ def create_app():
                         ports[field][fixed_origin] = ports[field].pop(origin)
 
     def get_server_map():
-        return {x["_id"]:x for x in list(mongo.db.servers.find())}
+        return {x["_id"]:x for x in list(mongo.db.servers.find({},
+            {'masternames': 0}))}
 
     @app.route('/')
     def index():
