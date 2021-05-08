@@ -89,6 +89,6 @@ href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mas
 ><span class="glyphicon glyphicon-file"></span>{{ text }}</a>
 {%- endmacro %}
 
-{% macro linkorigin(origin) -%}
-<a target="_new" data-toggle="tooltip" title="Portsmon for {{ origin }}" href="http://portsmon.freebsd.org/portoverview.py?category={{ origin.split('/')[0] }}&amp;portname={{ origin.split('/')[1] }}"><span class="glyphicon glyphicon-tasks"></span>{{ origin }}</a>
+{% macro linkorigin(origin, build) -%}
+<a target="_new" data-toggle="tooltip" title="Port skeleton of {{ origin }}@{{ build.buildname }}" href="https://cgit.freebsd.org/ports/tree/{{ origin }}?id={{ build.buildname }}"><span class="glyphicon glyphicon-tasks"></span>{{ origin }}</a>
 {%- endmacro %}

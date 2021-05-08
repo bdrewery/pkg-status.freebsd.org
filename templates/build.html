@@ -78,7 +78,7 @@
       {% for origin in ports.new[stat] -%}
         <tr>
           <td>{{ ports.pkgnames[origin] }}</td>
-          <td>{{ pkgstatus.linkorigin(origin) }}</td>
+          <td>{{ pkgstatus.linkorigin(origin, build) }}</td>
           {% if stat == "failed" -%}
           <td>{{ ports[stat][origin].phase }}</td>
           <td></td>
