@@ -33,4 +33,4 @@ six==1.10.0
 sqlite3==0.0.0
 traitlets==4.2.1
 urllib3==1.26.5
-Werkzeug==0.16.0
+Werkzeug==2.2.3
