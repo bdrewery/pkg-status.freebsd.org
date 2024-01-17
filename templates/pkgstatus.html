@@ -27,7 +27,7 @@
 {%- endmacro %}
 
 {% macro linkset(setname) -%}
-{% if setname == "" -%}
+{% if not setname or setname == "" -%}
 {% set setname="default" %}
 {%- endif %}
 <a data-toggle="tooltip" title="All builds matching set {{ setname }}" href="{{ url_for('builds', setname=setname) }}"><span class="glyphicon glyphicon-filter"></span></a>
