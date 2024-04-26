@@ -1,4 +1,3 @@
-exp:pb2.nyi.freebsd.org
 exp:package18.nyi.freebsd.org
 exp:package19.nyi.freebsd.org
 exp:package20.nyi.freebsd.org
@@ -10,16 +9,9 @@ exp:gohan02.nyi.freebsd.org
 exp:gohan03.nyi.freebsd.org
 exp:gohan04.nyi.freebsd.org
 exp:gohan05.nyi.freebsd.org
-package:beefy1.nyi.freebsd.org
-package:beefy2.nyi.freebsd.org
-package:beefy3.nyi.freebsd.org
-package:beefy4.nyi.freebsd.org
-package:beefy5.nyi.freebsd.org
-package:beefy6.nyi.freebsd.org
+exp:gohan06.chi.freebsd.org
 package:beefy7.nyi.freebsd.org
 package:beefy8.nyi.freebsd.org
-package:beefy9.nyi.freebsd.org
-package:beefy10.nyi.freebsd.org
 package:beefy11.nyi.freebsd.org
 package:beefy12.nyi.freebsd.org
 package:beefy13.nyi.freebsd.org
@@ -32,3 +24,6 @@ package:beefy19.nyi.freebsd.org
 package:ampere1.nyi.freebsd.org
 package:ampere2.nyi.freebsd.org
 package:ampere3.nyi.freebsd.org
+package:beefy20.chi.freebsd.org
+package:beefy21.chi.freebsd.org
+package:beefy22.chi.freebsd.org
