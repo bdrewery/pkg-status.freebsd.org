@@ -1,19 +1,21 @@
 import datetime
 import json
-from flask import Flask, jsonify, render_template, request, make_response
-from flask_jsglue import JSGlue
-from flask_bootstrap import Bootstrap
+from flask import Flask, jsonify, render_template, request, make_response, url_for
+from flask_bootstrap import Bootstrap5
 from flask_pymongo import PyMongo
-from urllib import urlencode
+from urllib.parse import urlencode
 import flask_pymongo as pymongo
 import os
 import time
 
 def create_app():
     app = Flask(__name__, static_folder='public/static', static_url_path='/static')
-    Bootstrap(app)
+    app.config['APPLICATION_ROOT'] = '/'
+    app.config['PREFERRED_URL_SCHEME'] = 'http'
+    app.config['MONGO_URI'] = os.getenv('MONGO_URI', 'mongodb://localhost:27017/pkgstatus')
+
+    Bootstrap5(app)
     mongo = PyMongo(app)
-    jsglue = JSGlue(app)
     filter_keys = ['all', 'type', 'setname', 'buildname', 'jailname', 'server']
 
     @app.template_filter('duration')
@@ -42,7 +44,7 @@ def create_app():
     def fix_port_origins(ports):
         if 'pkgnames' not in ports:
             return
-        for origin in ports['pkgnames']:
+        for origin in list(ports['pkgnames'].keys()):
             if '%' in origin:
                 fixed_origin = origin.replace('%', '.')
                 ports['pkgnames'][fixed_origin] = ports['pkgnames'].pop(origin)
@@ -61,7 +63,7 @@ def create_app():
     @app.route('/servers.js')
     def servers_js():
         return make_response("var servers = %s;" % (json.dumps(get_server_map())),
-                200, {'Content-Type': 'text/javascript'});
+                200, {'Content-Type': 'text/javascript'})
 
     def _get_filter():
         query = {'latest': True}
@@ -71,7 +73,7 @@ def create_app():
         }
         latest = True
         if request.args is not None:
-            for key, value in request.args.iteritems():
+            for key, value in request.args.items():
                 if key in filter_keys:
                     query[key] = value
             filter = query.copy()

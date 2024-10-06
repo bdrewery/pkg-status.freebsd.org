@@ -10,10 +10,152 @@
 .remaining { background-color: #E3E3E3 !important; }
 .latest { background-color: #f7Fe4a; }
 
-/*
-table.dataTable thead th,
-table.dataTable tbody td {
-  padding-top: 1px;
-  padding-bottom: 1px;
+body {
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
 }
-*/
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+h3, h4, h5, h6 {
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+table {
+    font-size: 14px;
+}
+
+button, .btn {
+    font-size: 14px;
+}
+
+input, select, textarea {
+    font-size: 14px;
+}
+
+.container-fluid {
+    margin-top: 20px;
+}
+
+.btn i {
+  margin-right: 5px;
+}
+
+.table th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table > :not(:first-child) {
+    border-top: 1px solid #e9ecef;
+}
+
+.bi, .glyphicon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+a {
+    color: #337ab7;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/*
+ * DataTable
+ */
+table.dataTable {
+    font-size: 14px;
+    border: none;
+}
+
+table.dataTable thead th {
+    border: none;
+    font-weight: bold;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+table.dataTable tbody td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+}
+
+table.dataTable tbody a {
+    color: #337ab7;
+    text-decoration: none;
+}
+
+table.dataTable tbody a:hover {
+    text-decoration: underline;
+}
+
+table.dataTable tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+table.dataTable tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.2em 0.4em;
+    font-size: 0.85em;
+    margin: 0 2px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    color: #fff !important;
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    text-decoration: none;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.dataTables_wrapper .dataTables_info {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.dataTables_wrapper .dataTables_length label {
+    font-size: 0.85em;
+    color: #333;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+    font-size: 0.85em;
+    color: #333;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    font-size: 14px;
+}

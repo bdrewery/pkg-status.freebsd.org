@@ -1,27 +1,28 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 import requests
 import sys
 import pymongo
 import re
+import os
 
 def fetch_data(server, path):
-    url = "http://%s%s" % (server, path)
-    print("Fetching %s" % url)
+    url = f"http://{server}{path}"
+    print(f"Fetching {url}")
     try:
         response = requests.get(url, timeout=0.5)
     except requests.exceptions.ConnectionError:
-        print("Connection error to %s" % url)
+        print(f"Connection error to {url}")
         return None
     except requests.exceptions.ReadTimeout:
-        print("Timeout to %s" % url)
+        print(f"Timeout to {url}")
         return None
     if response.status_code == 200:
         try:
-            json = response.json()
-            return json
-        except:
-            pass
+            return response.json()
+        except Exception as e:
+            print(f"Error parsing JSON: {e}")
+            return None
     return None
 
 def gather_masternames(server):
@@ -30,30 +31,29 @@ def gather_masternames(server):
         return None
     return [(mastername, build["latest"],
         build["setname"], build["ptname"], build["jailname"])
-            for mastername, build in json["masternames"].iteritems()]
+            for mastername, build in json["masternames"].items()]
 
 def gather_builds(server, mastername):
-    json = fetch_data(server, "/data/%s/.data.json" % mastername)
+    json = fetch_data(server, f"/data/{mastername}/.data.json")
     if not json or "builds" not in json:
         return None
     return json["builds"]
 
 def gather_build_info(server, mastername, build):
-    json = fetch_data(server, "/data/%s/%s/.data.json" % (mastername, build))
+    json = fetch_data(server, f"/data/{mastername}/{build}/.data.json")
     if not json or "buildname" not in json:
         return None
     return json
 
 def build_id(setname, ptname, jailname, build, server):
-    return "%s:%s:%s:%s:%s" % (setname, ptname, jailname, build,
-            server.split('.')[0])
+    return f"{setname}:{ptname}:{jailname}:{build}:{server.split('.')[0]}"
 
 def build_id_to_mastername(buildid):
     tmp = buildid.split(':')
     setname = ""
     if tmp[1] != "default":
         setname = "-" + tmp[1]
-    mastername = tmp[3] + "-" + tmp[2] + setname
+    mastername = f"{tmp[3]}-{tmp[2]}{setname}"
     return mastername
 
 def build_id_to_server(buildid):
@@ -84,8 +84,8 @@ def fix_port_origins(ports):
                 origin_key = origin.replace('.', '%')
                 pkgname = obj['pkgname']
                 pkgnames[origin_key] = pkgname
-                del(obj['pkgname'])
-                del(obj['origin'])
+                del obj['pkgname']
+                del obj['origin']
                 new_obj[origin_key] = obj
             ports[key] = new_obj
     ports['pkgnames'] = pkgnames
@@ -108,8 +108,7 @@ def process_new_failures(build, current=False):
     if len(previous_build) == 0:
         return False
     previous_build = previous_build[0]
-    print("Processing new failures for %s. Previous build %s" % (
-        build['_id'], previous_build['_id']))
+    print(f"Processing new failures for {build['_id']}. Previous build {previous_build['_id']}")
 
     # Fetch the full port list for both builds to determine changes
     result_keys = ['built', 'failed', 'skipped', 'ignored']
@@ -147,23 +146,23 @@ def process_new_failures(build, current=False):
     build['previous_id'] = previous_build['_id']
     return True
 
-db = pymongo.MongoClient().pkgstatus
 
+mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/pkgstatus')
+client = pymongo.MongoClient(mongo_uri)
+db = client['pkgstatus']
 qat_sets = ["qat", "baseline", "build-as-user"]
 
 # Repair start times
 for build_info in db.builds.find({'started': {'$exists': False}}, {"_id": "",
     'snap.now': '', 'snap.elapsed': ''}):
     calc_started(build_info)
-    print("Setting started to '%d' for %s" % (build_info['started'],
-        build_info['_id']))
-    db.builds.update({'_id': build_info['_id']},
-            {'$set': {'started': build_info['started']}})
+    print(f"Setting started to '{build_info['started']}' for {build_info['_id']}")
+    db.builds.update_one({'_id': build_info['_id']}, {'$set': {'started': build_info['started']}})
 
 # Import new data
 with open("servers.txt", "r") as f:
     for line in f:
-        if line[0] == "#":
+        if line.startswith("#"):
             continue
         line = line.strip().split(':')
         server_type = line[0]
@@ -180,7 +179,7 @@ with open("servers.txt", "r") as f:
                     "host": server,
                     "masternames": {}
                     }
-            db.servers.insert(server_info)
+            db.servers.insert_one(server_info)
         for mastername, latest, setname, ptname, jailname in masternames:
             running_builds = True
             if mastername not in server_info["masternames"]:
@@ -191,7 +190,7 @@ with open("servers.txt", "r") as f:
             if 'latest_status' not in server_info["masternames"][mastername]:
                 server_info["masternames"][mastername]['latest_status'] = \
                         'unknown'
-            if latest['status'][0:7] == 'stopped' and \
+            if latest['status'].startswith('stopped') and \
                     latest['buildname'] == \
                     server_info["masternames"][mastername]["latest"] and \
                     latest['status'] == \
@@ -209,14 +208,14 @@ with open("servers.txt", "r") as f:
                 setname = "default" # Don't do this
 
             # XXX: Archive deleted builds
-            for buildname, build_info_sparse in builds.iteritems():
+            for buildname, build_info_sparse in builds.items():
                 if buildname == "latest":
                     buildname = build_info_sparse
                     buildid = build_id(setname, ptname, jailname, buildname, server)
-                    db.builds.update({"mastername": mastername,
+                    db.builds.update_many({"mastername": mastername,
                         "server": server_short, "latest": True},
                         {"$unset": {"latest": ""}})
-                    db.builds.update({"_id": buildid},
+                    db.builds.update_one({"_id": buildid},
                             {"$set": {"latest": True}})
                     continue
                 buildid = build_id(setname, ptname, jailname, buildname, server)
@@ -225,7 +224,7 @@ with open("servers.txt", "r") as f:
                     continue
                 build = db.builds.find_one({"_id": buildid})
                 # Don't update existing "stopped:" builds.
-                if build is not None and build["status"][0:7] == "stopped":
+                if build is not None and build["status"].startswith("stopped"):
                         continue
 
                 # Fetch the full build information
@@ -235,8 +234,8 @@ with open("servers.txt", "r") as f:
 
                 # XXX: This is not importable due to pkgname keys having '.'
                 if "skipped" in build_info:
-                    del(build_info["skipped"])
-                for key, value in build_info["stats"].iteritems():
+                    del build_info["skipped"]
+                for key, value in build_info["stats"].items():
                     build_info["stats"][key] = int(value)
                 try:
                     build_info["stats"]["remaining"] = \
@@ -272,28 +271,26 @@ with open("servers.txt", "r") as f:
                     build_info["ports"]["_id"] = buildid
                     fix_port_origins(build_info["ports"])
                     process_new_failures(build_info, current=True)
-                    db.ports.update({"_id": buildid}, build_info["ports"],
+                    db.ports.update_one({"_id": buildid}, {"$set": build_info["ports"]},
                             upsert=True)
-                    del(build_info["ports"])
+                    del build_info["ports"]
 
                 if build is not None:
-                    print("Updating %s / %s: %s" % (mastername, buildname,
-                        buildid))
-                    db.builds.update({"_id": buildid}, {'$set': build_info})
+                    print(f"Updating {mastername} / {buildname}: {buildid}")
+                    db.builds.update_one({"_id": buildid}, {'$set': build_info})
                 else:
-                    print("Insert %s / %s: %s" % (mastername, buildname,
-                        buildid))
-                    db.builds.insert(build_info)
-        db.servers.update({"_id": server_short}, server_info)
+                    print(f"Insert {mastername} / {buildname}: {buildid}")
+                    db.builds.insert_one(build_info)
+        db.servers.update_one({"_id": server_short}, {"$set": server_info})
 
 # Repair pkgnames
 for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
     # Fetch here rather than in the loop due to memory explosion
     ports = db.ports.find_one({'_id': portids['_id']},
         {x: '' for x in ['built', 'failed', 'skipped', 'ignored']})
-    print("Fixing pkgnames for %s" % portids['_id'])
+    print(f"Fixing pkgnames for {portids['_id']}")
     fix_port_origins(ports)
-    db.ports.update({'_id': portids['_id']}, {'$set': ports})
+    db.ports.update_one({'_id': portids['_id']}, {'$set': ports})
 
 # Process new failures
 for portids in db.ports.find({'new': {'$exists': False}},
@@ -307,13 +304,13 @@ for portids in db.ports.find({'new': {'$exists': False}},
         {'mastername': '', 'type': '', 'started': ''})
     # Ignore legacy data (no snap.now) and crashed builds.
     if build is None:
-        db.ports.update({'_id': portids['_id']}, {'$set': {'new': []}})
+        db.ports.update_one({'_id': portids['_id']}, {'$set': {'new': []}})
         continue
     if not process_new_failures(build):
         continue
-    db.ports.update({'_id': build['_id']},
+    db.ports.update_one({'_id': build['_id']},
             {'$set': {'new': build['ports']['new']}})
-    db.builds.update({'_id': build['_id']},
+    db.builds.update_one({'_id': build['_id']},
             {'$set': {'new_stats': build['new_stats'],
                 'previous_id': build['previous_id']}})
 

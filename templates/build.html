@@ -1,32 +1,50 @@
 {% extends "base.html" %}
+{% import "pkgstatus.html" as pkgstatus %}
 
 {% block content %}
 {{super()}}
 <div class="container">
-<div>
-  <dl class="dl-horizontal">
-    <dt>Build</dt>
-    <dd id="buildname">{{ pkgstatus.linkbuild(build, servers) }}</dd>
-    <dt>Server</dt>
-    <dd id="server">{{ pkgstatus.linkserver(build, servers) }}</dd>
-    <dt>Status</dt>
-    <dd id="status">{{ build.status }}</dd>
-    <dt>Jail</dt>
-    <dd id="jail">{{ pkgstatus.linkjail(build, servers) }}</dd>
-    <dt>Set</dt>
-    <dd id="setname">{{ pkgstatus.linkset(build.setname) }}</dd>
-    <dt>Ports Tree</dt>
-    <dd id="ptname">{{ build.ptname }}</dd>
-    <dt>Build type</dt>
-    <dd id="build_type">{{ pkgstatus.linktype(build.type) }}</dd>
-    <dt>Start time</dt>
-    <dd id="start_time">{{ (build.started) | datetime }}</dd>
-    <dt>Elapsed</dt>
-    <dd id="elapsed">{{ build.snap.elapsed | duration }}</dd>
-    <dt>SVN</dt>
-    <dd id="svn_url">{{ build.svn_url }}</dd>
-  </dl>
-</div>
+
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Build:</strong></div>
+    <div>{{ pkgstatus.linkbuild(build, servers) }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Server:</strong></div>
+    <div>{{ pkgstatus.linkserver(build, servers) }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Status:</strong></div>
+    <div>{{ build.status }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Jail:</strong></div>
+    <div>{{ pkgstatus.linkjail(build, servers) }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Set:</strong></div>
+    <div>{{ pkgstatus.linkset(build.setname) }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Ports Tree:</strong></div>
+    <div>{{ build.ptname }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Build type:</strong></div>
+    <div>{{ pkgstatus.linktype(build.type) }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Stime time:</strong></div>
+    <div>{{ (build.started) | datetime }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>Elapsed:</strong></div>
+    <div>{{ build.snap.elapsed | duration }}</div>
+  </div>
+  <div class="d-flex mb-2">
+    <div class="font-weight-bold pr-2" style="min-width: 120px;"><strong>SVN:</strong></div>
+    <div>{{ build.svn_url }}</div>
+  </div>
 
 <div>
   <table class="table">
@@ -58,18 +76,17 @@
   {% if build.new_stats[stat] -%}
   <h2 id="new_{{ stat }}">New {{ stat|capitalize }}</h2>
   <table class="table display compact text-nowrap"
-    data-datatable="true" id="table_new_{{ stat }}" width="100%">
+    data-datatable-html="true" id="table_new_{{ stat }}" width="100%">
     <thead>
       <tr>
         <th>Package</th>
         <th>Origin</th>
         {% if stat == "failed" -%}
         <th>Phase</th>
-        <th>Skipped</th>
         {%- endif %}
         {% if stat == "skipped" or stat == "ignored" -%}
         <th>Reason</th>
-        {%- else %}
+        {%- else -%}
         <th>Log</th>
         {%- endif %}
       </tr>
@@ -81,7 +98,6 @@
           <td>{{ pkgstatus.linkorigin(origin, build) }}</td>
           {% if stat == "failed" -%}
           <td>{{ ports[stat][origin].phase }}</td>
-          <td></td>
           {%- endif %}
           {% if stat == "skipped" -%}
           <td>{{ ports[stat][origin].depends }}</td>
