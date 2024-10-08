@@ -13,7 +13,6 @@ exp:gohan06.chi.freebsd.org
 package:beefy7.nyi.freebsd.org
 package:beefy8.nyi.freebsd.org
 package:beefy11.nyi.freebsd.org
-package:beefy12.nyi.freebsd.org
 package:beefy13.nyi.freebsd.org
 package:beefy14.nyi.freebsd.org
 package:beefy15.nyi.freebsd.org
