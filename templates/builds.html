@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "pkgstatus.html" as pkgstatus %}
 
 {% block content %}
 {{super()}}
@@ -26,12 +27,12 @@ Viewing all matching builds.
         <th data-dt-col="ptname">Ports</th>
         <th data-dt-col="jailname" data-dt-col-formatter="linkjail">Jail</th>
         <th data-dt-col="buildname" data-dt-col-formatter="linkbuild">Build</th>
-        <th data-dt-col="stats.queued" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="queued" title="Queued" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Queued</span><span class="hidden-md hidden-lg">Q</th>
-        <th data-dt-col="stats.built" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="built" title="Built" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Built</span><span class="hidden-md hidden-lg">B</th>
-        <th data-dt-col="stats.failed" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="failed" title="Failed" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Failed</span><span class="hidden-md hidden-lg">F</th>
-        <th data-dt-col="stats.skipped" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="skipped" title="Skipped" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Skipped</span><span class="hidden-md hidden-lg">S</th>
-        <th data-dt-col="stats.ignored" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="ignored" title="Ignored" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Ignored</span><span class="hidden-md hidden-lg">I</th>
-        <th data-dt-col="stats.remaining" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="remaining" title="Remaining" data-toggle="tooltip" data-container="body"><span class="visible-md visible-lg">Remaining</span><span class="hidden-md hidden-lg">R</th>
+        <th data-dt-col="stats.queued" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="queued" title="Queued" data-toggle="tooltip" data-container="body">Queued</th>
+        <th data-dt-col="stats.built" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="built" title="Built" data-toggle="tooltip" data-container="body">Built</th>
+        <th data-dt-col="stats.failed" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="failed" title="Failed" data-toggle="tooltip" data-container="body">Failed</th>
+        <th data-dt-col="stats.skipped" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="skipped" title="Skipped" data-toggle="tooltip" data-container="body">Skipped</th>
+        <th data-dt-col="stats.ignored" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="ignored" title="Ignored" data-toggle="tooltip" data-container="body">Ignored</th>
+        <th data-dt-col="stats.remaining" data-dt-col-formatter="stats" data-dt-col-type="numeric" class="remaining" title="Remaining" data-toggle="tooltip" data-container="body">Remaining</th>
         <th data-dt-col="status">Status</th>
         <th data-dt-col="started" data-dt-col-formatter="datetime" data-dt-col-type="numeric">Started (UTC)</th>
         <th data-dt-col="snap.elapsed" data-dt-col-formatter="duration" data-dt-col-type="numeric">Elapsed</th>

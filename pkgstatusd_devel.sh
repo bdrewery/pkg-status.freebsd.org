@@ -9,7 +9,8 @@ if [ "$1" = "venv" ]; then
 	. venv/bin/activate
 fi
 
-while :; do
-	python3 gather_to_mongo.py
-	sleep 60
-done
+#export FLASK_APP=pkgstatus:app
+#exec python3 manage.py run --debug
+
+# or
+exec gunicorn pkgstatus:app -b 127.0.0.1:5000 --log-level=debug --reload
