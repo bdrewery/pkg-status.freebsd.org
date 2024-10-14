@@ -30,9 +30,11 @@ function poudriere_icon() {
 
 function linkpoudrierebuild(build) {
     return '<a target="_new" data-bs-toggle="tooltip" title="Poudriere Build" ' +
-        'href="http://' + servers[build.server].host +
-        '/build.html?mastername=' + build.mastername +
-        '&amp;build=' + build.buildname + '">' + poudriere_icon() + '</a>';
+        'href="' +
+        Flask.url_for('poudriere', {'server': build.server,
+            'uri': 'build.html', 'mastername': build.mastername,
+            'build': build.buildname}) +
+        '">' + poudriere_icon() + '</a>';
 }
 
 function linkbuild(build) {
@@ -80,8 +82,9 @@ function linkserver(build) {
     Flask.url_for('builds', {'server': build.server}) + '">' +
     filter_icon() + '</a>' +
     '<a target="_new" data-bs-toggle="tooltip" title="Poudriere Server" ' +
-    'href="http://' + servers[build.server].host + '/">' +
-    poudriere_icon() + '</a>' +
+        'href="' +
+        Flask.url_for('poudriere', {'server': build.server}) +
+        '">' + poudriere_icon() + '</a>' +
     build.server;
 }
 
@@ -91,9 +94,10 @@ function linkjail(build) {
     Flask.url_for('builds', {'jailname': build.jailname}) + '">' +
     filter_icon() + '</a>' +
     '<a target="_new" data-bs-toggle="tooltip" title="Poudriere Jail" ' +
-    'href="http://' + servers[build.server].host +
-    '/jail.html?mastername=' + build.mastername + '">' + poudriere_icon() +
-    '</a>' + build.jailname;
+        'href="' +
+        Flask.url_for('poudriere', {'server': build.server,
+            'uri': 'jail.html', 'mastername': build.mastername}) +
+        '">' + poudriere_icon() + '</a>' + build.jailname;
 }
 
 function format_duration(duration) {

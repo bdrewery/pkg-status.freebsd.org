@@ -53,20 +53,20 @@
 {% if build['have_logs'] %}
 href="{{ local_log_base(build) }}"
 {% else %}
-href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mastername }}&amp;build={{ build.buildname }}"
+href="{{ url_for('poudriere', server=build.server, uri='build.html', mastername=build.mastername, build=build.buildname) }}"
 {% endif %}
 >{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
 {% macro linkjail(build, servers) -%}
 <a data-bs-toggle="tooltip" title="All builds matching jail {{ build.jailname }}" href="{{ url_for('builds', jailname=build.jailname) }}">{{ filter_icon() }}</a>
-<a target="_new" data-bs-toggle="tooltip" title="Poudriere Jail" href="http://{{ servers[build.server].host }}/jail.html?mastername={{ build.mastername }}">{{ poudriere_icon() }}</a>
+<a target="_new" data-bs-toggle="tooltip" title="Poudriere Jail" href="{{ url_for('poudriere', server=build.server, uri='jail.html', mastername=build.mastername) }}">{{ poudriere_icon() }}</a>
 {{ build.jailname }}
 {%- endmacro %}
 
 {% macro linkserver(build, servers) -%}
 <a data-bs-toggle="tooltip" title="All builds matching server {{ build.server }}" href="{{ url_for('builds', server=build.server) }}">{{ filter_icon() }}</a>
-<a target="_new" data-bs-toggle="tooltip" title="Poudriere Server" href="http://{{ servers[build.server].host }}/">{{ poudriere_icon() }}</a>
+<a target="_new" data-bs-toggle="tooltip" title="Poudriere Server" href="{{ url_for('poudriere', server=build.server) }}">{{ poudriere_icon() }}</a>
 {{ build.server }}
 {%- endmacro %}
 
@@ -80,7 +80,8 @@ href="http://{{ servers[build.server].host }}/build.html?mastername={{ build.mas
 {% if build['have_logs'] %}
   href="{{ local_log_base(build) }}/logs/{{ pkgname }}.log"
 {% else %}
-  href="http://{{ servers[build.server].host }}/data/{{ build.mastername }}/{{ build.buildname }}/logs/{{ pkgname }}.log"
+  href="{{ url_for('poudriere', server=build.server,
+  uri="data/{}/{}/logs/{}.log".format(build.mastername, build.buildname, pkgname)) }}"
 {% endif %}
 ><span class="bi bi-file-earmark"></span>{{ text }}</a>
 {%- endmacro %}
