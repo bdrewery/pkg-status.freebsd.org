@@ -54,21 +54,12 @@ def create_app():
                     if field in ports and origin in ports[field]:
                         ports[field][fixed_origin] = ports[field].pop(origin)
 
-    def get_server_map():
-        return {x["_id"]:x for x in list(mongo.db.servers.find({},
-            {'masternames': 0}))}
-
     def get_server(server):
         return mongo.db.servers.find_one({'_id': server}, {'masternames': 0})
 
     @app.route('/')
     def index():
         return builds()
-
-    @app.route('/servers.js')
-    def servers_js():
-        return make_response("var servers = %s;" % (json.dumps(get_server_map())),
-                200, {'Content-Type': 'text/javascript'})
 
     def _get_filter():
         query = {'latest': True}
@@ -117,7 +108,6 @@ def create_app():
     @app.route('/builds')
     def builds():
         results = _builds()
-        results['servers'] = get_server_map()
         return render_template('builds.html', **results)
 
     def _build(buildid):
@@ -135,7 +125,6 @@ def create_app():
     @app.route('/builds/<buildid>')
     def build(buildid):
         results = _build(buildid)
-        results['servers'] = get_server_map()
         return render_template('build.html', **results)
 
     """

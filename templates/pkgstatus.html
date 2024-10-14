@@ -38,17 +38,17 @@
 {{ setname }}
 {%- endmacro %}
 
-{% macro linkbuild(build, servers) -%}
+{% macro linkbuild(build) -%}
 <a data-bs-toggle="tooltip" title="All builds matching buildname {{ build.buildname }}" href="{{ url_for('builds', buildname=build.buildname) }}">{{ filter_icon() }}</a>
-{{ linkpoudrierebuild(build, servers) }}
-<a data-bs-toggle="tooltip" title="Build {{ build._id }}" href="{{ url_for('build', buildid=build._id) }}">{{ build.buildname }}</a>
+{{ linkpoudrierebuild(build) }}
+<a data-bs-toggle="tooltip" title"Build {{ build._id }}" href="{{ url_for('build', buildid=build._id)}}">{{ build.buildname }}</a>
 {%- endmacro %}
 
 {% macro local_log_base(build) -%}
 /logs/{{ build.server }}/{{ build.mastername }}/{{ build.buildname }}
 {%- endmacro %}
 
-{% macro linkpoudrierebuild(build, servers) -%}
+{% macro linkpoudrierebuild(build) -%}
 <a target="_new" data-bs-toggle="tooltip" title="Poudriere Build"
 {% if build['have_logs'] %}
 href="{{ local_log_base(build) }}"
@@ -58,13 +58,13 @@ href="{{ url_for('poudriere', server=build.server, uri='build.html', mastername=
 >{{ poudriere_icon() }}</a>
 {%- endmacro %}
 
-{% macro linkjail(build, servers) -%}
+{% macro linkjail(build) -%}
 <a data-bs-toggle="tooltip" title="All builds matching jail {{ build.jailname }}" href="{{ url_for('builds', jailname=build.jailname) }}">{{ filter_icon() }}</a>
 <a target="_new" data-bs-toggle="tooltip" title="Poudriere Jail" href="{{ url_for('poudriere', server=build.server, uri='jail.html', mastername=build.mastername) }}">{{ poudriere_icon() }}</a>
 {{ build.jailname }}
 {%- endmacro %}
 
-{% macro linkserver(build, servers) -%}
+{% macro linkserver(build) -%}
 <a data-bs-toggle="tooltip" title="All builds matching server {{ build.server }}" href="{{ url_for('builds', server=build.server) }}">{{ filter_icon() }}</a>
 <a target="_new" data-bs-toggle="tooltip" title="Poudriere Server" href="{{ url_for('poudriere', server=build.server) }}">{{ poudriere_icon() }}</a>
 {{ build.server }}
@@ -75,7 +75,7 @@ href="{{ url_for('poudriere', server=build.server, uri='build.html', mastername=
 {{ build_type|capitalize }}
 {%- endmacro %}
 
-{% macro linklog(build, servers, text, pkgname) -%}
+{% macro linklog(build, text, pkgname) -%}
 <a target="_new" data-bs-toggle="tooltip" title="Build Log for {{ pkgname }}"
 {% if build['have_logs'] %}
   href="{{ local_log_base(build) }}/logs/{{ pkgname }}.log"

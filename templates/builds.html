@@ -40,36 +40,6 @@ Viewing all matching builds.
       </tr>
     </thead>
     <tbody>
-    {% if false %}
-    {% for build in builds %}
-      <tr id="{{ build._id }}">
-        <td>{{ pkgstatus.linkset(build.setname) }}</td>
-        <td>{{ build.ptname }}</td>
-        <td>{{ pkgstatus.linkjail(build, servers) }}</td>
-        <td>{{ pkgstatus.linkbuild(build, servers) }}</td>
-        <td data-filter="no">{{ build.stats.queued }}</td>
-        {% for stat in ["built", "failed", "skipped", "ignored"] %}
-        <td data-filter="no" data-order="{{ build.stats[stat] }}">{{ build.stats[stat] }}
-          {%- if build.new_stats and build.new_stats[stat] -%}
-          &nbsp;<a
-            href="{{ url_for('build', buildid=build._id) }}#new_{{ stat }}">
-            (+{{ build.new_stats[stat] }})
-          </a>
-          {%- endif -%}
-        </td>
-        {% endfor %}
-        <td data-filter="no">{{ build.stats.remaining }}</td>
-        <td>{{ build.status }}</td>
-        <td data-order="{{ (build.started) }}">
-          {{ (build.started) | datetime }}
-        </td>
-        <td data-order="{{ build.snap.elapsed }}">
-          {{ build.snap.elapsed|duration }}
-        </td>
-        <td>{{ pkgstatus.linkserver(build, servers) }}</td>
-      </tr>
-    {%- endfor -%}
-    {% endif %}
     </tbody>
   </table>
 </div>
