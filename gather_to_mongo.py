@@ -7,7 +7,12 @@ import re
 import os
 
 def fetch_data(server, path):
-    url = f"http://{server}{path}"
+    proxy_server = os.getenv("PKGSTATUS_GATHER_PROXY_SERVER")
+
+    if proxy_server:
+        url = f"{proxy_server}/{server.split('.')[0]}{path}"
+    else:
+        url = f"http://{server}{path}"
     print(f"Fetching {url}")
     try:
         response = requests.get(url, timeout=0.5)
