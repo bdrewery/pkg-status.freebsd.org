@@ -2,6 +2,7 @@ import datetime
 import json
 from flask import Flask, jsonify, render_template, request, make_response, url_for
 from flask_bootstrap import Bootstrap5
+from flask_jsglue import JSGlue
 from flask_pymongo import PyMongo
 from urllib.parse import urlencode
 import flask_pymongo as pymongo
@@ -15,6 +16,7 @@ def create_app():
     app.config['MONGO_URI'] = os.getenv('MONGO_URI', 'mongodb://localhost:27017/pkgstatus')
 
     Bootstrap5(app)
+    jsglue = JSGlue(app)
     mongo = PyMongo(app)
     filter_keys = ['all', 'type', 'setname', 'buildname', 'jailname', 'server']
 

@@ -1,4 +1,5 @@
 Bootstrap-Flask~=2.4
+Flask-JSGlue @ https://github.com/Centers-Health/Flask-JSGlue/tarball/b467d942947548b1076337fd11f17723bf8059ea#sha256=cfa9912e566341e2a42cb1b162ea4796c0975cba6f056144cd8f9fdbf2f88ae9
 Flask-PyMongo~=2.3
 Flask-Script~=2.0
 Flask-SocketIO~=5.4
