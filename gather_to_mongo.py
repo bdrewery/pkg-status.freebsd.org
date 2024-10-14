@@ -122,6 +122,7 @@ def fix_port_origins(ports):
     ports['pkgnames'] = pkgnames
 
 def process_new_failures(build, current=False):
+    previous_build = None
     # Find the previous matching build or skip if there is none. Only consider
     # passing builds.
     if build['type'] in ["package", "qat"]:
@@ -131,14 +132,17 @@ def process_new_failures(build, current=False):
             'status': 'stopped:done:',
             'started': {'$lt': build['started']}}).sort(
                     [('started', pymongo.DESCENDING)]).limit(1))
+        if len(previous_build) == 0:
+            return False
+        previous_build = previous_build[0]
     else:
-        # Compare exp runs to a previous baseline
-        # XXX
+        # XXX: Compare exp runs to a previous baseline
+        # For now consider all failures as new
+        previous_build = build
+
+    if previous_build is None:
         return False
 
-    if len(previous_build) == 0:
-        return False
-    previous_build = previous_build[0]
     print(f"Processing new failures for {build['_id']}. Previous build {previous_build['_id']}")
 
     # Fetch the full port list for both builds to determine changes
@@ -148,6 +152,8 @@ def process_new_failures(build, current=False):
     if current:
         previous_ports = db.ports.find_one({'_id': previous_build['_id']},
                 query_filter)
+        if previous_ports is None:
+            previous_ports = {}
         current_ports = build['ports']
     else:
         ports_list = db.ports.find({
