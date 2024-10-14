@@ -158,6 +158,7 @@ db = client['pkgstatus']
 qat_sets = ["qat", "baseline", "build-as-user"]
 
 # Repair start times
+print("Reparing build start times.")
 for build_info in db.builds.find({'started': {'$exists': False}}, {"_id": "",
     'snap.now': '', 'snap.elapsed': ''}):
     calc_started(build_info)
@@ -165,6 +166,7 @@ for build_info in db.builds.find({'started': {'$exists': False}}, {"_id": "",
     db.builds.update_one({'_id': build_info['_id']}, {'$set': {'started': build_info['started']}})
 
 # Import new data
+print("Importing new data.")
 with open("servers.txt", "r") as f:
     for line in f:
         if line.startswith("#"):
@@ -289,6 +291,7 @@ with open("servers.txt", "r") as f:
         db.servers.update_one({"_id": server_short}, {"$set": server_info})
 
 # Repair pkgnames
+print("Fixing pkgnames.")
 for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
     # Fetch here rather than in the loop due to memory explosion
     ports = db.ports.find_one({'_id': portids['_id']},
@@ -298,6 +301,7 @@ for portids in db.ports.find({'pkgnames': {'$exists': False}}, {"_id": ""}):
     db.ports.update_one({'_id': portids['_id']}, {'$set': ports})
 
 # Process new failures
+print("Processing build failures and stats.")
 for portids in db.ports.find({'new': {'$exists': False}},
         {"_id": ""}).sort([('_id', pymongo.ASCENDING)]):
     # This is not done above as it would load several GB of data.
