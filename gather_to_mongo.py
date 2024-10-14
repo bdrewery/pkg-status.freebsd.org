@@ -5,6 +5,9 @@ import sys
 import pymongo
 import re
 import os
+from time import time
+
+TRIM_YEARS = os.getenv("PKGSTATUS_GATHER_TRIM_YEARS")
 
 def fetch_data(server, path):
     proxy_server = os.getenv("PKGSTATUS_GATHER_PROXY_SERVER")
@@ -66,6 +69,29 @@ def build_id_to_server(buildid):
 
 def build_id_to_buildname(buildid):
     return buildid.split(':')[4]
+
+def trim_period():
+    if TRIM_YEARS is None:
+        return None
+    return int(time()) - (365 * 24 * 60 * 60 * int(TRIM_YEARS))
+
+"""
+Trim old builds
+A 2-step delete is needed. builds and ports have the same _id.
+We could delete from ports only the builds that we trim, but for
+good measure and so this script is interruptable, always trim
+from ports for which there is no corresponding known build.
+"""
+def trim_builds():
+    if trim_period() is None:
+        return
+    print(f"Trimming builds older than {TRIM_YEARS} year(s) old.")
+    result = db.builds.delete_many({'started': {'$lt': trim_period()}})
+    print(f"Trimmed {result.deleted_count} old builds.")
+    print("Trimming orphaned ports.")
+    build_ids = db.builds.distinct('_id')
+    result = db.ports.delete_many({'_id': {'$nin': build_ids}})
+    print(f"Trimmed {result.deleted_count} orphaned ports.")
 
 def calc_started(build_info):
     if "started" in build_info:
@@ -165,6 +191,8 @@ for build_info in db.builds.find({'started': {'$exists': False}}, {"_id": "",
     print(f"Setting started to '{build_info['started']}' for {build_info['_id']}")
     db.builds.update_one({'_id': build_info['_id']}, {'$set': {'started': build_info['started']}})
 
+trim_builds()
+
 # Import new data
 print("Importing new data.")
 with open("servers.txt", "r") as f:
@@ -262,6 +290,12 @@ with open("servers.txt", "r") as f:
                                     int(build_info["snap"][snapkey])
                 # Convert and/or calculated started epoch time.
                 calc_started(build_info)
+
+                # If the build is older than the trim period then do
+                # not import it.
+                if trim_period() is not None and build_info['started'] < trim_period():
+                    print(f"Skipping importing too-old build: {buildid}")
+                    continue
 
                 # Trim idle jobs to save db space
                 if "jobs" in build_info:
